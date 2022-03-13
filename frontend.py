@@ -1,6 +1,7 @@
 import sys
 from functools import partial
 
+from PySide6 import QtGui, QtWidgets, QtCore, QtCore
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGridLayout,
@@ -41,6 +42,8 @@ class MainUi(QMainWindow):
         self._createOutput(self._bodyLayout)
         self._mainLayout.addLayout(self._bodyLayout)
 
+        self.last_x, self.last_y = None, None
+
     def _createTitle(self):
         # create the title with the two buttons
         layout = QHBoxLayout()
@@ -64,12 +67,17 @@ class MainUi(QMainWindow):
         layout = QVBoxLayout()
 
         layout.addWidget(QLabel("Input"))
-        self._inputFrame = QFrame()
+        self._inputFrame = QLabel()
         self._inputFrame.setFrameShape(QFrame.Box)
-        self._inputFrame.setMinimumSize(200, 200)
+        pixmap = QtGui.QPixmap(200, 200)
+        pixmap.fill(QtGui.Qt.white)
+        self._inputFrame.setPixmap(pixmap)
+        self._inputFrame.mouseMoveEvent = self.clickDraw
+        self._inputFrame.mouseReleaseEvent = self.releaseDraw
         layout.addWidget(self._inputFrame)
 
         self._clearButton = QPushButton("Clear")
+        self._clearButton.clicked.connect(self.clear)
         layout.addWidget(self._clearButton)
 
         parent.addLayout(layout)
@@ -79,20 +87,45 @@ class MainUi(QMainWindow):
         layout = QVBoxLayout()
 
         layout.addWidget(QLabel("Output"))
-        self._outputFrame = QFrame()
+        self._outputFrame = QLabel()
         self._outputFrame.setFrameShape(QFrame.Box)
         self._outputFrame.setMinimumSize(200, 50)
         layout.addWidget(self._outputFrame)
 
         layout.addWidget(QLabel("Information Summary"))
 
-        self._infoFrame = QFrame()
+        self._infoFrame = QLabel()
         self._infoFrame.setFrameShape(QFrame.Box)
         self._infoFrame.setMinimumSize(200, 100)
         layout.addWidget(self._infoFrame)
 
         layout.addStretch()
         parent.addLayout(layout)
+
+    def clickDraw(self, e):
+        if self.last_x is None:  # First event.
+            self.last_x = e.x()
+            self.last_y = e.y()
+            return  # Ignore the first time.
+
+        pixmap = self._inputFrame.pixmap()
+        painter = QtGui.QPainter(pixmap)
+        pen = QtGui.QPen(Qt.black, 3)
+        painter.setPen(pen)
+        painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
+        painter.end()
+        self.last_x = e.x()
+        self.last_y = e.y()
+        self._inputFrame.setPixmap(pixmap)
+
+    def releaseDraw(self, e):
+        self.last_x = None
+        self.last_y = None
+
+    def clear(self):
+        pixmap = self._inputFrame.pixmap()
+        pixmap.fill(QtGui.Qt.white)
+        self._inputFrame.setPixmap(pixmap)
 
 
 class Controller:
