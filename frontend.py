@@ -42,8 +42,6 @@ class MainUi(QMainWindow):
         self._createOutput(self._bodyLayout)
         self._mainLayout.addLayout(self._bodyLayout)
 
-        self.last_x, self.last_y = None, None
-
     def _createTitle(self):
         # create the title with the two buttons
         layout = QHBoxLayout()
@@ -67,17 +65,12 @@ class MainUi(QMainWindow):
         layout = QVBoxLayout()
 
         layout.addWidget(QLabel("Input"))
-        self._inputFrame = QLabel()
-        self._inputFrame.setFrameShape(QFrame.Box)
-        pixmap = QtGui.QPixmap(200, 200)
-        pixmap.fill(QtGui.Qt.white)
-        self._inputFrame.setPixmap(pixmap)
-        self._inputFrame.mouseMoveEvent = self.clickDraw
-        self._inputFrame.mouseReleaseEvent = self.releaseDraw
-        layout.addWidget(self._inputFrame)
+        self._canvas = Canvas()
+        self._canvas.setFrameShape(QFrame.Box)
+        layout.addWidget(self._canvas)
 
         self._clearButton = QPushButton("Clear")
-        self._clearButton.clicked.connect(self.clear)
+        self._clearButton.clicked.connect(self._canvas.clear)
         layout.addWidget(self._clearButton)
 
         parent.addLayout(layout)
@@ -102,30 +95,48 @@ class MainUi(QMainWindow):
         layout.addStretch()
         parent.addLayout(layout)
 
-    def clickDraw(self, e):
+
+class Canvas(QLabel):
+    def __init__(self):
+        super().__init__()
+        canvas = QtGui.QPixmap(250, 250)
+        canvas.fill(QtGui.Qt.white)
+        self.setPixmap(canvas)
+
+        self.last_x, self.last_y = None, None
+        self.pen_color = Qt.black
+
+    def set_pen_color(self, c):
+        self.pen_color = c
+
+    def clear(self):
+        canvas = self.pixmap()
+        canvas.fill(QtGui.Qt.white)
+        self.setPixmap(canvas)
+
+    def mouseMoveEvent(self, e):
         if self.last_x is None:  # First event.
             self.last_x = e.x()
             self.last_y = e.y()
             return  # Ignore the first time.
 
-        pixmap = self._inputFrame.pixmap()
-        painter = QtGui.QPainter(pixmap)
-        pen = QtGui.QPen(Qt.black, 3)
-        painter.setPen(pen)
+        canvas = self.pixmap()
+        painter = QtGui.QPainter(canvas)
+        p = painter.pen()
+        p.setWidth(4)
+        p.setColor(self.pen_color)
+        painter.setPen(p)
         painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
         painter.end()
+        self.setPixmap(canvas)
+
+        # Update the origin for next time.
         self.last_x = e.x()
         self.last_y = e.y()
-        self._inputFrame.setPixmap(pixmap)
 
-    def releaseDraw(self, e):
+    def mouseReleaseEvent(self, e):
         self.last_x = None
         self.last_y = None
-
-    def clear(self):
-        pixmap = self._inputFrame.pixmap()
-        pixmap.fill(QtGui.Qt.white)
-        self._inputFrame.setPixmap(pixmap)
 
 
 class Controller:
