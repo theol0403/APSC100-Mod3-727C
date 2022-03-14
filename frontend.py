@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
     QFrame,
+    QComboBox,
 )
 
 
@@ -35,12 +36,19 @@ class MainUi(QMainWindow):
         self._centralWidget.setLayout(self._mainLayout)
 
         # Create layouts
+        self._createMenu()
         self._createTitle()
 
         self._bodyLayout = QHBoxLayout()
         self._createInput(self._bodyLayout)
         self._createOutput(self._bodyLayout)
         self._mainLayout.addLayout(self._bodyLayout)
+
+    def _createMenu(self):
+        self.file = self.menuBar().addMenu("&File")
+        self.file.addAction("&Exit", self.close)
+        self.inputSelector = self.menuBar().addMenu("&Input Device")
+        self.inputSelector.addAction("&Camera 1", self.close)
 
     def _createTitle(self):
         # create the title with the two buttons
@@ -54,8 +62,13 @@ class MainUi(QMainWindow):
         self._instButton = QPushButton("Instructions")
         layout.addWidget(self._instButton)
 
-        self._modeButton = QPushButton("Mode")
+        self._modeButton = QComboBox()
+        self._modeButton.addItems(["Handwriting", "Webcam"])
         layout.addWidget(self._modeButton)
+
+        self._modelButton = QComboBox()
+        self._modelButton.addItems(["CNN", "SVM", "KNN", "MLP"])
+        layout.addWidget(self._modelButton)
 
         self._mainLayout.addLayout(layout)
         self._mainLayout.addSpacing(20)
