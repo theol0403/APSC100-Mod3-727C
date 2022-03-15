@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 from functools import partial
 
 from PySide6 import QtGui, QtWidgets, QtCore, QtCore
@@ -93,10 +94,10 @@ class MainUi(QMainWindow):
         layout = QVBoxLayout()
 
         layout.addWidget(QLabel("Output"))
-        self._outputFrame = QLabel()
-        self._outputFrame.setFrameShape(QFrame.Box)
-        self._outputFrame.setMinimumSize(200, 50)
-        layout.addWidget(self._outputFrame)
+        self._output = Output()
+        self._output.setFrameShape(QFrame.Box)
+        self._output.setConfidence(confidence)
+        layout.addWidget(self._output)
 
         layout.addWidget(QLabel("Information Summary"))
 
@@ -112,15 +113,11 @@ class MainUi(QMainWindow):
 class Canvas(QLabel):
     def __init__(self):
         super().__init__()
-        canvas = QtGui.QPixmap(250, 250)
+        canvas = QtGui.QPixmap(300, 300)
         canvas.fill(QtGui.Qt.white)
         self.setPixmap(canvas)
 
         self.last_x, self.last_y = None, None
-        self.pen_color = Qt.black
-
-    def set_pen_color(self, c):
-        self.pen_color = c
 
     def clear(self):
         canvas = self.pixmap()
@@ -137,7 +134,7 @@ class Canvas(QLabel):
         painter = QtGui.QPainter(canvas)
         p = painter.pen()
         p.setWidth(4)
-        p.setColor(self.pen_color)
+        p.setColor(Qt.black)
         painter.setPen(p)
         painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
         painter.end()
@@ -150,6 +147,44 @@ class Canvas(QLabel):
     def mouseReleaseEvent(self, e):
         self.last_x = None
         self.last_y = None
+
+
+class Output(QLabel):
+    def __init__(self):
+        super().__init__()
+
+        self._width = 300
+        self._height = 30
+        self._radius = 20
+
+        canvas = QtGui.QPixmap(self._width, self._height)
+        canvas.fill(QtGui.Qt.white)
+        self.setPixmap(canvas)
+
+    def setConfidence(self, confidence):
+        """Color a grid of 10 circles according to the confidence"""
+        canvas = self.pixmap()
+        painter = QtGui.QPainter(canvas)
+        p = painter.pen()
+
+        spacing = (self._width - len(confidence * self._radius)) / (len(confidence) + 1)
+
+        for i in range(len(confidence)):
+            x = i * (self._radius + spacing) + spacing
+            y = (self._height - self._radius) / 2
+            if i == np.argmax(confidence):
+                p.setColor(Qt.red)
+                p.setWidth(2)
+            else:
+                p.setColor(Qt.black)
+                p.setWidth(1)
+            color = QtGui.QColor(0, 0, 0, np.power(confidence[i], 3) * 255)
+            painter.setPen(p)
+            painter.setBrush(color)
+            painter.drawEllipse(x, y, self._radius, self._radius)
+
+        painter.end()
+        self.setPixmap(canvas)
 
 
 class Controller:
@@ -186,6 +221,8 @@ def main():
     # Execute calculator's main loop
     sys.exit(app.exec())
 
+
+confidence = [0.4, 0, 0, 0.8, 0, 0.3, 0.99, 0, 0.5, 0]
 
 if __name__ == "__main__":
     main()
