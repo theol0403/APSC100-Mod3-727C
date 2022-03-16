@@ -81,7 +81,6 @@ class MainUi(QMainWindow):
         self.mainLayout.addSpacing(20)
 
     def showInst(self):
-        print("Hello")
         instDlg = QDialog(self)
         instDlg.setWindowTitle("Instructions")
         instDlg.layout = QVBoxLayout()
