@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QFrame,
     QComboBox,
+    QDialog
 )
 
 
@@ -61,6 +62,7 @@ class MainUi(QMainWindow):
         layout.addWidget(title)
 
         self._instButton = QPushButton("Instructions")
+        self._instButton.clicked.connect(self.showInst)
         layout.addWidget(self._instButton)
 
         self._modeButton = QComboBox()
@@ -73,6 +75,17 @@ class MainUi(QMainWindow):
 
         self._mainLayout.addLayout(layout)
         self._mainLayout.addSpacing(20)
+
+    def showInst(self):
+        print("Hello")
+        instDlg = QDialog(self)
+        instDlg.setWindowTitle("Instructions")
+        instDlg.layout = QVBoxLayout()
+        text = QLabel("These are the instructions",instDlg)
+        instDlg.layout.addWidget(text)
+        instDlg.setFixedSize(300,300)
+        instDlg.exec()
+    
 
     def _createInput(self, parent):
         # create the left input side
