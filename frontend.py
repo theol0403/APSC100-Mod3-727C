@@ -132,40 +132,43 @@ class MainUi(QMainWindow):
 class Canvas(QLabel):
     def __init__(self):
         super().__init__()
-        canvas = QtGui.QPixmap(300, 300)
-        canvas.fill(QtGui.Qt.white)
-        self.setPixmap(canvas)
 
-        self.last_x, self.last_y = None, None
+        self.dim = 300
+        self.pixel = 28
+        self.scale = self.dim / self.pixel
+
+        self.setPixmap(QtGui.QPixmap(self.dim, self.dim))
+        self.clear()
 
     def clear(self):
+        self.grid = np.zeros((self.pixel, self.pixel))
+        self.updateCanvas()
+
+    def updateCanvas(self):
         canvas = self.pixmap()
         canvas.fill(QtGui.Qt.white)
-        self.setPixmap(canvas)
-
-    def mouseMoveEvent(self, e):
-        if self.last_x is None:  # First event.
-            self.last_x = e.x()
-            self.last_y = e.y()
-            return  # Ignore the first time.
-
-        canvas = self.pixmap()
         painter = QtGui.QPainter(canvas)
-        p = painter.pen()
-        p.setWidth(4)
-        p.setColor(Qt.black)
-        painter.setPen(p)
-        painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
+        painter.setBrush(Qt.black)
+        for i in range(len(self.grid)):
+            for j in range(len(self.grid[i])):
+                if self.grid[i][j] == 1:
+                    painter.drawRect(
+                        i * self.scale,
+                        j * self.scale,
+                        self.scale,
+                        self.scale,
+                    )
         painter.end()
         self.setPixmap(canvas)
 
-        # Update the origin for next time.
-        self.last_x = e.x()
-        self.last_y = e.y()
-
-    def mouseReleaseEvent(self, e):
-        self.last_x = None
-        self.last_y = None
+    def mouseMoveEvent(self, e):
+        pos = e.position()
+        x = int(np.floor(pos.x() / self.dim * self.pixel))
+        y = int(np.floor(pos.y() / self.dim * self.pixel))
+        x = np.clip(x, 0, self.pixel - 1)
+        y = np.clip(y, 0, self.pixel - 1)
+        self.grid[x][y] = 1
+        self.updateCanvas()
 
 
 class Output(QLabel):
