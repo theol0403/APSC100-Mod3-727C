@@ -29,9 +29,9 @@ class MainUi(QMainWindow):
         # Set some main window's properties
         self.setWindowTitle("Handwritten Digit Recognition")
         # self.setFixedSize(235, 235)
-        
+
         # set icon
-        self.setWindowIcon(QtGui.QIcon('icon.png'))
+        self.setWindowIcon(QtGui.QIcon("icon.png"))
 
         # Set the central widget and the general layout
         self.centralWidget = QWidget(self)
@@ -155,7 +155,10 @@ class Canvas(QLabel):
             for j in range(len(self.grid[i])):
                 if self.grid[i][j] == 1:
                     painter.drawRect(
-                        i * self.scale, j * self.scale, self.scale, self.scale,
+                        i * self.scale,
+                        j * self.scale,
+                        self.scale,
+                        self.scale,
                     )
         painter.end()
         self.setPixmap(canvas)
@@ -188,11 +191,13 @@ class Output(QLabel):
         painter = QtGui.QPainter(canvas)
         p = painter.pen()
 
-        spacing = (self.width - len(confidence * self.radius)) / (len(confidence) + 1)
+        spacing = int(
+            (self.width - len(confidence * self.radius)) / (len(confidence) + 1)
+        )
 
         for i in range(len(confidence)):
             x = i * (self.radius + spacing) + spacing
-            y = (self.height - self.radius) / 2
+            y = int((self.height - self.radius) / 2)
             if i == np.argmax(confidence):
                 p.setColor(Qt.red)
                 p.setWidth(2)
