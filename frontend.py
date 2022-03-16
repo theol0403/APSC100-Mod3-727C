@@ -46,13 +46,13 @@ class MainUi(QMainWindow):
         self.createOutput(self.bodyLayout)
         self.mainLayout.addLayout(self.bodyLayout)
 
-    def _createMenu(self):
+    def createMenu(self):
         self.file = self.menuBar().addMenu("&File")
         self.file.addAction("&Exit", self.close)
         self.inputSelector = self.menuBar().addMenu("&Input Device")
         self.inputSelector.addAction("&Camera 1", self.close)
 
-    def _createTitle(self):
+    def createTitle(self):
         # create the title with the two buttons
         layout = QHBoxLayout()
 
@@ -92,16 +92,16 @@ class MainUi(QMainWindow):
     def changeModel(self, index):
         # CNN = 0, SVM = 1, KNN = 2, MLP = 3
         # from the dropdown order.
-        if index is 1:
+        if index == 1:
             print("cnn")
-        elif index is 2:
+        elif index == 2:
             print("svm")
-        elif index is 3:
+        elif index == 3:
             print("knn")
-        elif index is 4:
+        elif index == 4:
             print("mlp")
 
-    def _createInput(self, parent):
+    def createInput(self, parent):
         # create the left input side
         layout = QVBoxLayout()
 
@@ -116,7 +116,7 @@ class MainUi(QMainWindow):
 
         parent.addLayout(layout)
 
-    def _createOutput(self, parent):
+    def createOutput(self, parent):
         # create the right output side
         layout = QVBoxLayout()
 
@@ -224,7 +224,7 @@ class Controller:
         # Connect signals and slots
         self.connectSignals()
 
-    def _connectSignals(self):
+    def connectSignals(self):
         pass
 
 
