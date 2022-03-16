@@ -137,7 +137,7 @@ class Canvas(QLabel):
 
         self.dim = 300
         self.pixel = 28
-        self.scale = int(self.dim / self.pixel)
+        self.scale = self.dim / self.pixel
 
         self.setPixmap(QtGui.QPixmap(self.dim, self.dim))
         self.clear()
@@ -155,18 +155,18 @@ class Canvas(QLabel):
             for j in range(len(self.grid[i])):
                 if self.grid[i][j] == 1:
                     painter.drawRect(
-                        i * self.scale,
-                        j * self.scale,
-                        self.scale,
-                        self.scale,
+                        int(i * self.scale),
+                        int(j * self.scale),
+                        int(self.scale),
+                        int(self.scale),
                     )
         painter.end()
         self.setPixmap(canvas)
 
     def mouseMoveEvent(self, e):
         pos = e.pos()
-        x = int(np.round(pos.x() / self.dim * self.pixel))
-        y = int(np.round(pos.y() / self.dim * self.pixel))
+        x = int(np.floor(pos.x() / self.dim * self.pixel))
+        y = int(np.floor(pos.y() / self.dim * self.pixel))
         x = np.clip(x, 0, self.pixel - 1)
         y = np.clip(y, 0, self.pixel - 1)
         self.grid[x][y] = 1
