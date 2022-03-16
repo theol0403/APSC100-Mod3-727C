@@ -48,7 +48,6 @@ class MainUi(QMainWindow):
         self.createInput(self.bodyLayout)
         self.createOutput(self.bodyLayout)
         self.mainLayout.addLayout(self.bodyLayout)
-        #test
 
     def createMenu(self):
         self.file = self.menuBar().addMenu("&File")
@@ -70,7 +69,10 @@ class MainUi(QMainWindow):
         layout.addWidget(self.instButton)
 
         self.modeButton = QComboBox()
+        self.canvas = Canvas()
         self.modeButton.addItems(["Handwriting", "Webcam"])
+        self.modeButton.currentIndexChanged.connect(self.canvas.changeBlack)
+        
         layout.addWidget(self.modeButton)
 
         self.modelButton = QComboBox()
@@ -101,7 +103,6 @@ class MainUi(QMainWindow):
         layout = QVBoxLayout()
 
         layout.addWidget(QLabel("Input"))
-        self.canvas = Canvas()
         self.canvas.setFrameShape(QFrame.Box)
         layout.addWidget(self.canvas)
 
@@ -145,6 +146,11 @@ class Canvas(QLabel):
 
     def clear(self):
         self.grid = np.zeros((self.pixel, self.pixel))
+        self.updateCanvas()
+
+    def changeBlack(self):
+        self.grid = np.zeros((self.pixel, self.pixel))
+        canvas.fill(QtGui.Qt.red)
         self.updateCanvas()
 
     def updateCanvas(self):
