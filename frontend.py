@@ -70,7 +70,8 @@ class MainUi(QMainWindow):
         layout.addWidget(self.modeButton)
 
         self.modelButton = QComboBox()
-        self.modelButton.addItems(["CNN", "SVM", "KNN", "MLP"])
+        self.modelList = ["CNN", "SVM", "KNN", "MLP"]
+        self.modelButton.addItems(self.modelList)
         self.modelButton.currentIndexChanged.connect(self.changeModel)
         layout.addWidget(self.modelButton)
 
@@ -90,16 +91,7 @@ class MainUi(QMainWindow):
         instDlg.exec()
 
     def changeModel(self, index):
-        # CNN = 0, SVM = 1, KNN = 2, MLP = 3
-        # from the dropdown order.
-        if index == 1:
-            print("cnn")
-        elif index == 2:
-            print("svm")
-        elif index == 3:
-            print("knn")
-        elif index == 4:
-            print("mlp")
+        print(self.modelList[index])
 
     def createInput(self, parent):
         # create the left input side
