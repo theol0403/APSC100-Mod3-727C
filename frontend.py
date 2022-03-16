@@ -29,6 +29,9 @@ class MainUi(QMainWindow):
         # Set some main window's properties
         self.setWindowTitle("Handwritten Digit Recognition")
         # self.setFixedSize(235, 235)
+        
+        # set icon
+        self.setWindowIcon(QtGui.QIcon('icon.png'))
 
         # Set the central widget and the general layout
         self.centralWidget = QWidget(self)
