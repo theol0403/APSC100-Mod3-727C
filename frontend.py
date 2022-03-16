@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QFrame,
     QComboBox,
-    QDialog
+    QDialog,
 )
 
 
@@ -31,20 +31,20 @@ class MainUi(QMainWindow):
         # self.setFixedSize(235, 235)
 
         # Set the central widget and the general layout
-        self._centralWidget = QWidget(self)
-        self.setCentralWidget(self._centralWidget)
+        self.centralWidget = QWidget(self)
+        self.setCentralWidget(self.centralWidget)
 
-        self._mainLayout = QVBoxLayout()
-        self._centralWidget.setLayout(self._mainLayout)
+        self.mainLayout = QVBoxLayout()
+        self.centralWidget.setLayout(self.mainLayout)
 
         # Create layouts
-        self._createMenu()
-        self._createTitle()
+        self.createMenu()
+        self.createTitle()
 
-        self._bodyLayout = QHBoxLayout()
-        self._createInput(self._bodyLayout)
-        self._createOutput(self._bodyLayout)
-        self._mainLayout.addLayout(self._bodyLayout)
+        self.bodyLayout = QHBoxLayout()
+        self.createInput(self.bodyLayout)
+        self.createOutput(self.bodyLayout)
+        self.mainLayout.addLayout(self.bodyLayout)
 
     def _createMenu(self):
         self.file = self.menuBar().addMenu("&File")
@@ -61,32 +61,34 @@ class MainUi(QMainWindow):
         title.setStyleSheet("font-size: 20px;")
         layout.addWidget(title)
 
-        self._instButton = QPushButton("Instructions")
-        self._instButton.clicked.connect(self.showInst)
-        layout.addWidget(self._instButton)
+        self.instButton = QPushButton("Instructions")
+        self.instButton.clicked.connect(self.showInst)
+        layout.addWidget(self.instButton)
 
-        self._modeButton = QComboBox()
-        self._modeButton.addItems(["Handwriting", "Webcam"])
-        layout.addWidget(self._modeButton)
+        self.modeButton = QComboBox()
+        self.modeButton.addItems(["Handwriting", "Webcam"])
+        layout.addWidget(self.modeButton)
 
-        self._modelButton = QComboBox()
-        self._modelButton.addItems(["CNN", "SVM", "KNN", "MLP"])
-        self._modelButton.currentIndexChanged.connect(self.changeModel)
-        layout.addWidget(self._modelButton)
+        self.modelButton = QComboBox()
+        self.modelButton.addItems(["CNN", "SVM", "KNN", "MLP"])
+        self.modelButton.currentIndexChanged.connect(self.changeModel)
+        layout.addWidget(self.modelButton)
 
-        self._mainLayout.addLayout(layout)
-        self._mainLayout.addSpacing(20)
+        layout.addStretch()
+
+        self.mainLayout.addLayout(layout)
+        self.mainLayout.addSpacing(20)
 
     def showInst(self):
         print("Hello")
         instDlg = QDialog(self)
         instDlg.setWindowTitle("Instructions")
         instDlg.layout = QVBoxLayout()
-        text = QLabel("These are the instructions",instDlg)
+        text = QLabel("These are the instructions", instDlg)
         instDlg.layout.addWidget(text)
-        instDlg.setFixedSize(300,300)
+        instDlg.setFixedSize(300, 300)
         instDlg.exec()
-        
+
     def changeModel(self, index):
         # CNN = 0, SVM = 1, KNN = 2, MLP = 3
         # from the dropdown order.
@@ -104,13 +106,13 @@ class MainUi(QMainWindow):
         layout = QVBoxLayout()
 
         layout.addWidget(QLabel("Input"))
-        self._canvas = Canvas()
-        self._canvas.setFrameShape(QFrame.Box)
-        layout.addWidget(self._canvas)
+        self.canvas = Canvas()
+        self.canvas.setFrameShape(QFrame.Box)
+        layout.addWidget(self.canvas)
 
-        self._clearButton = QPushButton("Clear")
-        self._clearButton.clicked.connect(self._canvas.clear)
-        layout.addWidget(self._clearButton)
+        self.clearButton = QPushButton("Clear")
+        self.clearButton.clicked.connect(self.canvas.clear)
+        layout.addWidget(self.clearButton)
 
         parent.addLayout(layout)
 
@@ -119,17 +121,17 @@ class MainUi(QMainWindow):
         layout = QVBoxLayout()
 
         layout.addWidget(QLabel("Output"))
-        self._output = Output()
-        self._output.setFrameShape(QFrame.Box)
-        self._output.setConfidence(confidence)
-        layout.addWidget(self._output)
+        self.output = Output()
+        self.output.setFrameShape(QFrame.Box)
+        self.output.setConfidence(confidence)
+        layout.addWidget(self.output)
 
         layout.addWidget(QLabel("Information Summary"))
 
-        self._infoFrame = QLabel()
-        self._infoFrame.setFrameShape(QFrame.Box)
-        self._infoFrame.setMinimumSize(200, 100)
-        layout.addWidget(self._infoFrame)
+        self.infoFrame = QLabel()
+        self.infoFrame.setFrameShape(QFrame.Box)
+        self.infoFrame.setMinimumSize(200, 100)
+        layout.addWidget(self.infoFrame)
 
         layout.addStretch()
         parent.addLayout(layout)
@@ -178,11 +180,11 @@ class Output(QLabel):
     def __init__(self):
         super().__init__()
 
-        self._width = 300
-        self._height = 30
-        self._radius = 20
+        self.width = 300
+        self.height = 30
+        self.radius = 20
 
-        canvas = QtGui.QPixmap(self._width, self._height)
+        canvas = QtGui.QPixmap(self.width, self.height)
         canvas.fill(QtGui.Qt.white)
         self.setPixmap(canvas)
 
@@ -192,11 +194,11 @@ class Output(QLabel):
         painter = QtGui.QPainter(canvas)
         p = painter.pen()
 
-        spacing = (self._width - len(confidence * self._radius)) / (len(confidence) + 1)
+        spacing = (self.width - len(confidence * self.radius)) / (len(confidence) + 1)
 
         for i in range(len(confidence)):
-            x = i * (self._radius + spacing) + spacing
-            y = (self._height - self._radius) / 2
+            x = i * (self.radius + spacing) + spacing
+            y = (self.height - self.radius) / 2
             if i == np.argmax(confidence):
                 p.setColor(Qt.red)
                 p.setWidth(2)
@@ -206,7 +208,7 @@ class Output(QLabel):
             color = QtGui.QColor(0, 0, 0, np.power(confidence[i], 3) * 255)
             painter.setPen(p)
             painter.setBrush(color)
-            painter.drawEllipse(x, y, self._radius, self._radius)
+            painter.drawEllipse(x, y, self.radius, self.radius)
 
         painter.end()
         self.setPixmap(canvas)
@@ -217,10 +219,10 @@ class Controller:
 
     def __init__(self, view, model):
         """Controller initializer."""
-        self._view = view
-        self._model = model
+        self.view = view
+        self.model = model
         # Connect signals and slots
-        self._connectSignals()
+        self.connectSignals()
 
     def _connectSignals(self):
         pass
@@ -247,7 +249,7 @@ def main():
     sys.exit(app.exec())
 
 
-confidence = [0.4, 0, 0, 0.8, 0, 0.3, 0.99, 0, 0.5, 0]
+confidence = [0.4, 0, 0, 0.6, 0, 0.3, 0.99, 0, 0.5, 0]
 
 if __name__ == "__main__":
     main()
