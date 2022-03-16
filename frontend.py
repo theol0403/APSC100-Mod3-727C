@@ -2,9 +2,9 @@ import sys
 import numpy as np
 from functools import partial
 
-from PySide6 import QtGui, QtWidgets, QtCore, QtCore
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
+from PyQt5 import QtGui, QtWidgets, QtCore, QtCore
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
     QGridLayout,
     QLineEdit,
     QPushButton,
@@ -135,7 +135,7 @@ class Canvas(QLabel):
 
         self.dim = 300
         self.pixel = 28
-        self.scale = self.dim / self.pixel
+        self.scale = int(self.dim / self.pixel)
 
         self.setPixmap(QtGui.QPixmap(self.dim, self.dim))
         self.clear()
@@ -146,25 +146,22 @@ class Canvas(QLabel):
 
     def updateCanvas(self):
         canvas = self.pixmap()
-        canvas.fill(QtGui.Qt.white)
+        canvas.fill(Qt.white)
         painter = QtGui.QPainter(canvas)
         painter.setBrush(Qt.black)
         for i in range(len(self.grid)):
             for j in range(len(self.grid[i])):
                 if self.grid[i][j] == 1:
                     painter.drawRect(
-                        i * self.scale,
-                        j * self.scale,
-                        self.scale,
-                        self.scale,
+                        i * self.scale, j * self.scale, self.scale, self.scale,
                     )
         painter.end()
         self.setPixmap(canvas)
 
     def mouseMoveEvent(self, e):
-        pos = e.position()
-        x = int(np.floor(pos.x() / self.dim * self.pixel))
-        y = int(np.floor(pos.y() / self.dim * self.pixel))
+        pos = e.pos()
+        x = int(np.round(pos.x() / self.dim * self.pixel))
+        y = int(np.round(pos.y() / self.dim * self.pixel))
         x = np.clip(x, 0, self.pixel - 1)
         y = np.clip(y, 0, self.pixel - 1)
         self.grid[x][y] = 1
@@ -180,7 +177,7 @@ class Output(QLabel):
         self.radius = 20
 
         canvas = QtGui.QPixmap(self.width, self.height)
-        canvas.fill(QtGui.Qt.white)
+        canvas.fill(Qt.white)
         self.setPixmap(canvas)
 
     def setConfidence(self, confidence):
@@ -200,7 +197,7 @@ class Output(QLabel):
             else:
                 p.setColor(Qt.black)
                 p.setWidth(1)
-            color = QtGui.QColor(0, 0, 0, np.power(confidence[i], 3) * 255)
+            color = QtGui.QColor(0, 0, 0, int(np.power(confidence[i], 3) * 255))
             painter.setPen(p)
             painter.setBrush(color)
             painter.drawEllipse(x, y, self.radius, self.radius)
