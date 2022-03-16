@@ -48,6 +48,7 @@ class MainUi(QMainWindow):
         self.createInput(self.bodyLayout)
         self.createOutput(self.bodyLayout)
         self.mainLayout.addLayout(self.bodyLayout)
+        #test
 
     def createMenu(self):
         self.file = self.menuBar().addMenu("&File")
