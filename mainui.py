@@ -118,6 +118,10 @@ class MainUi(QMainWindow):
         self.predictButton.clicked.connect(self.predict)
         buttonLayout.addWidget(self.predictButton)
 
+        self.randomButton = QPushButton("Random")
+        self.randomButton.clicked.connect(self.canvas.setToMnist)
+        buttonLayout.addWidget(self.randomButton)
+
         layout.addLayout(buttonLayout)
 
         parent.addLayout(layout)

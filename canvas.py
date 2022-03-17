@@ -21,6 +21,12 @@ from PyQt5.QtWidgets import (
     QDialog,
 )
 
+from tensorflow.keras.datasets import mnist
+
+(train_x, train_y), (test_x, test_y) = mnist.load_data()
+train_x = train_x / 255.0
+test_x = test_x / 255.0
+
 
 class Canvas(QLabel):
     def __init__(self):
@@ -41,16 +47,16 @@ class Canvas(QLabel):
         canvas = self.pixmap()
         canvas.fill(Qt.white)
         painter = QtGui.QPainter(canvas)
-        painter.setBrush(Qt.black)
         for i in range(len(self.grid)):
             for j in range(len(self.grid[i])):
-                if self.grid[i][j] == 1:
-                    painter.drawRect(
-                        int(i * self.scale),
-                        int(j * self.scale),
-                        int(self.scale),
-                        int(self.scale),
-                    )
+                color = QtGui.QColor(0, 0, 0, int(self.grid[j][i] * 255))
+                painter.fillRect(
+                    int(i * self.scale),
+                    int(j * self.scale),
+                    int(self.scale),
+                    int(self.scale),
+                    color,
+                )
         painter.end()
         self.setPixmap(canvas)
 
@@ -60,11 +66,15 @@ class Canvas(QLabel):
         y = int(np.floor(pos.y() / self.dim * self.pixel))
         x = np.clip(x, 0, self.pixel - 1)
         y = np.clip(y, 0, self.pixel - 1)
-        self.grid[x][y] = 1
+        self.grid[y][x] = 1
         self.updateCanvas()
-    
+
     def setToImage(self):
         im = Image.open(r"icon.png")
         im = ImageQt(im).copy()
         self.setPixmap(QtGui.QPixmap.fromImage(im))
-        #self.layout_plot.addWidget(label)
+        # self.layout_plot.addWidget(label)
+
+    def setToMnist(self):
+        self.grid = test_x[np.random.randint(len(test_x))].reshape(28, 28).tolist()
+        self.updateCanvas()

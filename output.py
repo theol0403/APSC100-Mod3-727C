@@ -58,7 +58,7 @@ class Output(QLabel):
             else:
                 p.setColor(Qt.black)
                 p.setWidth(1)
-            color = QtGui.QColor(0, 0, 0, int(np.power(confidence[i], 3) * 255))
+            color = QtGui.QColor(0, 0, 0, int(confidence[i] * 255))
             painter.setPen(p)
             painter.setBrush(color)
             painter.drawEllipse(x, cy, self.diam, self.diam)
