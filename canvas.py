@@ -63,12 +63,15 @@ class Canvas(QLabel):
         self.setPixmap(canvas)
 
     def mouseMoveEvent(self, e):
+        # convert the mouse position to grid position
         pos = e.pos()
         x = int(np.floor(pos.x() / self.dim * self.pixel))
         y = int(np.floor(pos.y() / self.dim * self.pixel))
         x = np.clip(x, 0, self.pixel - 1)
         y = np.clip(y, 0, self.pixel - 1)
+        # set the grid value
         self.grid[y][x] = 1
+
         self.updateCanvas()
 
     def setToImage(self):
