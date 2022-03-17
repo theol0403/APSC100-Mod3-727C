@@ -39,6 +39,7 @@ class Controller:
     def connectSignals(self):
         self.view.modelButton.addItems(self.model.modelList)
         self.view.modelButton.currentIndexChanged.connect(self.model.changeModel)
+        self.view.modelButton.currentIndexChanged.connect(self.predict)
 
         self.view.canvas.mouseReleased = self.predict
         self.view.randomButton.clicked.connect(self.view.canvas.setToMnist)
@@ -64,16 +65,23 @@ class Controller:
 
 class Model:
     def __init__(self):
-        self.model_data = load_model("cnn.h5")
         self.modelList = ["CNN", "SVM", "KNN", "MLP"]
         self.model = self.modelList[0]
 
+        self.loadModels()
+
+    def loadModels(self):
+        self.cnn = load_model("cnn.h5")
+
     def changeModel(self, index):
-        print(self.modelList[index])
+        self.model = self.modelList[index]
+        print(f"Model changed to {self.model}")
 
     def predict(self, grid):
-        """Predict the output of the grid"""
-        prediction = self.model_data.predict(np.array(grid).reshape(1, 28, 28))[0]
+        if self.model == "CNN":
+            prediction = self.cnn.predict(np.array(grid).reshape(1, 28, 28))[0]
+        elif self.model == "SVM":
+            prediction = np.zeros(10)
         return prediction
 
 
