@@ -49,13 +49,15 @@ class Canvas(QLabel):
         painter = QtGui.QPainter(canvas)
         for i in range(len(self.grid)):
             for j in range(len(self.grid[i])):
-                color = QtGui.QColor(0, 0, 0, int(self.grid[j][i] * 255))
-                painter.fillRect(
+                opa = 255 - int(self.grid[j][i] * 255)
+                color = QtGui.QColor(opa, opa, opa, 255)
+                painter.setPen(color)
+                painter.setBrush(color)
+                painter.drawRect(
                     int(i * self.scale),
                     int(j * self.scale),
                     int(self.scale),
                     int(self.scale),
-                    color,
                 )
         painter.end()
         self.setPixmap(canvas)
