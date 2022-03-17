@@ -127,8 +127,11 @@ class MainUi(QMainWindow):
 
         self.infoFrame = QLabel()
         self.infoFrame.setFrameShape(QFrame.Box)
-        self.infoFrame.setMinimumSize(200, 100)
+        self.output.setConfidence(confidence)
         layout.addWidget(self.infoFrame)
 
         layout.addStretch()
         parent.addLayout(layout)
+
+
+confidence = [0.4, 0, 0, 0.6, 0, 0.3, 0.99, 0, 0.5, 0]

@@ -25,8 +25,9 @@ class Output(QLabel):
         super().__init__()
 
         self.width = 300
-        self.height = 30
-        self.radius = 20
+        self.height = 60
+        self.diam = 20
+        self.fontSize = 20
 
         canvas = QtGui.QPixmap(self.width, self.height)
         canvas.fill(Qt.white)
@@ -36,15 +37,19 @@ class Output(QLabel):
         """Color a grid of 10 circles according to the confidence"""
         canvas = self.pixmap()
         painter = QtGui.QPainter(canvas)
+        font = painter.font()
+        font.setPixelSize(self.fontSize)
+        painter.setFont(font)
         p = painter.pen()
 
         spacing = int(
-            (self.width - len(confidence * self.radius)) / (len(confidence) + 1)
+            (self.width - len(confidence * self.diam)) / (len(confidence) + 1)
         )
 
         for i in range(len(confidence)):
-            x = i * (self.radius + spacing) + spacing
-            y = int((self.height - self.radius) / 2)
+            x = i * (self.diam + spacing) + spacing
+            cy = int((self.height - self.diam) / (3 / 2)) + 4
+            ty = int((self.height) / (3 / 1)) + 4
             if i == np.argmax(confidence):
                 p.setColor(Qt.red)
                 p.setWidth(2)
@@ -54,7 +59,12 @@ class Output(QLabel):
             color = QtGui.QColor(0, 0, 0, int(np.power(confidence[i], 3) * 255))
             painter.setPen(p)
             painter.setBrush(color)
-            painter.drawEllipse(x, y, self.radius, self.radius)
+            painter.drawEllipse(x, cy, self.diam, self.diam)
+            painter.drawText(
+                int(x + self.diam / 2 - self.fontSize / 4),
+                int(ty),
+                str(i),
+            )
 
         painter.end()
         self.setPixmap(canvas)
