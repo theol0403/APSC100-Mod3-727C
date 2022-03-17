@@ -34,6 +34,8 @@ class Controller:
         # Connect signals and slots
         self.connectSignals()
 
+        self.predict()
+
     def connectSignals(self):
         self.view.modelButton.addItems(self.model.modelList)
         self.view.modelButton.currentIndexChanged.connect(self.model.changeModel)
@@ -41,6 +43,9 @@ class Controller:
         self.view.canvas.mouseReleased = self.predict
         self.view.randomButton.clicked.connect(self.view.canvas.setToMnist)
         self.view.randomButton.clicked.connect(self.predict)
+
+        self.view.clearButton.clicked.connect(self.view.canvas.clear)
+        self.view.clearButton.clicked.connect(self.predict)
 
     def predict(self):
         self.view.output.setConfidence(self.model.predict([self.view.canvas.grid_draw]))
@@ -58,7 +63,7 @@ class Model:
 
     def predict(self, grid):
         """Predict the output of the grid"""
-        prediction = self.model.predict(np.array(grid).reshape(1, 28, 28))[0].tolist()
+        prediction = self.model.predict(np.array(grid).reshape(1, 28, 28))[0]
         return prediction
 
 

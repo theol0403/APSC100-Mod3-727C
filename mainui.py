@@ -103,7 +103,6 @@ class MainUi(QMainWindow):
 
         buttonLayout = QHBoxLayout()
         self.clearButton = QPushButton("Clear")
-        self.clearButton.clicked.connect(self.canvas.clear)
         buttonLayout.addWidget(self.clearButton)
 
         self.randomButton = QPushButton("Random")

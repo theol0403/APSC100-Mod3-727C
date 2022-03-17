@@ -42,6 +42,9 @@ class Canvas(QLabel):
         self.setPixmap(QtGui.QPixmap(self.dim, self.dim))
         self.clear()
 
+        (_, _), (self.test_x, _) = mnist.load_data()
+        self.test_x = self.test_x / 255.0
+
     def clear(self):
         self.grid_draw = np.zeros((self.pixel, self.pixel))
         self.grid = np.zeros((self.pixel, self.pixel))
@@ -106,11 +109,6 @@ class Canvas(QLabel):
         pass
 
     def setToMnist(self):
-        # load mnist if needed
-        if self.text_x is None:
-            (_, _), (self.test_x, _) = mnist.load_data()
-            self.test_x = self.test_x / 255.0
-
         rand = np.random.randint(0, len(self.test_x))
         self.grid_draw = self.test_x[rand].reshape(28, 28)
         self.grid = self.grid_draw
