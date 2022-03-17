@@ -1,7 +1,5 @@
 import sys
 import numpy as np
-from tensorflow.keras.models import load_model
-from tensorflow.keras.datasets import mnist
 
 from PyQt5.QtWidgets import QApplication
 
@@ -15,7 +13,6 @@ class Controller:
         self.view = view
         self.model = model
         self.connectSignals()
-        self.predict()
 
     def connectSignals(self):
         """Add actions to the UI elements"""
@@ -32,8 +29,9 @@ class Controller:
 
     def displayMnist(self):
         self.view.canvas.clear()
-        rand = np.random.randint(0, len(self.model.test_x))
-        self.view.canvas.grid = self.model.test_x[rand].reshape(28, 28)
+        mnist = self.model.getMnist()
+        rand = np.random.randint(0, len(mnist))
+        self.view.canvas.grid = mnist[rand].reshape(28, 28)
         self.view.canvas.updateCanvas()
 
     def predict(self):
@@ -61,21 +59,35 @@ class Model:
         self.modelList = ["CNN", "SVM", "KNN", "MLP"]
         self.model = self.modelList[0]
 
-        self.loadModels()
-
-    def loadModels(self):
-        (_, _), (self.test_x, _) = mnist.load_data()
-        self.test_x = self.test_x / 255.0
-
-        self.cnn = load_model("cnn.h5")
+        # lazy-load the models so that frontend loading time is reduced
+        self.mnist = None
+        self.cnn = None
 
     def changeModel(self, index):
         self.model = self.modelList[index]
         print(f"Model changed to {self.model}")
 
+    # load the models on demand
+    def getMnist(self):
+        if self.mnist is None:
+            print("Loading MNIST dataset")
+            from tensorflow.keras.datasets import mnist
+
+            (_, _), (self.mnist, _) = mnist.load_data()
+            self.mnist = self.mnist / 255.0
+        return self.mnist
+
+    def getCnn(self):
+        if self.cnn is None:
+            print("Loading CNN model")
+            from tensorflow.keras.models import load_model
+
+            self.cnn = load_model("cnn.h5")
+        return self.cnn
+
     def predict(self, grid):
         if self.model == "CNN":
-            prediction = self.cnn.predict(np.array(grid).reshape(1, 28, 28))[0]
+            prediction = self.getCnn().predict(np.array(grid).reshape(1, 28, 28))[0]
         elif self.model == "SVM":
             prediction = np.zeros(10)
         return prediction
