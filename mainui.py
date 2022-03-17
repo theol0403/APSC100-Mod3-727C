@@ -26,9 +26,10 @@ from output import Output
 class MainUi(QMainWindow):
     """This is the class that provides the main ui of the application"""
 
-    def __init__(self):
+    def __init__(self, model):
         """View initializer."""
         super().__init__()
+        self.model = model
         # Set some main window's properties
         self.setWindowTitle("Handwritten Digit Recognition")
         # self.setFixedSize(235, 235)
@@ -108,9 +109,16 @@ class MainUi(QMainWindow):
         self.canvas.setFrameShape(QFrame.Box)
         layout.addWidget(self.canvas)
 
+        buttonLayout = QHBoxLayout()
         self.clearButton = QPushButton("Clear")
         self.clearButton.clicked.connect(self.canvas.clear)
-        layout.addWidget(self.clearButton)
+        buttonLayout.addWidget(self.clearButton)
+
+        self.predictButton = QPushButton("Predict")
+        self.predictButton.clicked.connect(self.predict)
+        buttonLayout.addWidget(self.predictButton)
+
+        layout.addLayout(buttonLayout)
 
         parent.addLayout(layout)
 
@@ -127,11 +135,10 @@ class MainUi(QMainWindow):
 
         self.infoFrame = QLabel()
         self.infoFrame.setFrameShape(QFrame.Box)
-        self.output.setConfidence(confidence)
         layout.addWidget(self.infoFrame)
 
         layout.addStretch()
         parent.addLayout(layout)
 
-
-confidence = [0.4, 0, 0, 0.6, 0, 0.3, 0.99, 0, 0.5, 0]
+    def predict(self):
+        self.output.setConfidence(self.model.predict([self.canvas.grid]))

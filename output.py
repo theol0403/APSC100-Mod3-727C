@@ -36,11 +36,13 @@ class Output(QLabel):
     def setConfidence(self, confidence):
         """Color a grid of 10 circles according to the confidence"""
         canvas = self.pixmap()
+        canvas.fill(Qt.white)
         painter = QtGui.QPainter(canvas)
+        p = painter.pen()
+
         font = painter.font()
         font.setPixelSize(self.fontSize)
         painter.setFont(font)
-        p = painter.pen()
 
         spacing = int(
             (self.width - len(confidence * self.diam)) / (len(confidence) + 1)
