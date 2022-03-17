@@ -4,6 +4,9 @@ from functools import partial
 from PIL import Image
 from PIL.ImageQt import ImageQt
 from scipy.ndimage.filters import gaussian_filter
+from skimage import draw
+from tensorflow.keras.datasets import mnist
+
 
 from PyQt5 import QtGui, QtWidgets, QtCore, QtCore
 from PyQt5.QtCore import Qt
@@ -31,8 +34,10 @@ class Canvas(QLabel):
         self.pixel = 28
         self.scale = self.dim / self.pixel
 
-        self.sigma = 0.8
-        self.boost = 4
+        self.sigma = 0.7
+        self.boost = 3
+
+        self.last_x, self.last_y, self.text_x = None, None, None
 
         self.setPixmap(QtGui.QPixmap(self.dim, self.dim))
         self.clear()
@@ -68,8 +73,14 @@ class Canvas(QLabel):
         y = int(np.floor(pos.y() / self.dim * self.pixel))
         x = np.clip(x, 0, self.pixel - 1)
         y = np.clip(y, 0, self.pixel - 1)
+        if self.last_x is None:
+            self.last_x = x
+            self.last_y = y
+            return
+
         # set the grid value
-        self.grid_draw[y][x] = 1
+        rr, cc = draw.line(self.last_x, self.last_y, x, y)
+        self.grid_draw[cc, rr] = 1
 
         self.grid = np.clip(
             gaussian_filter(
@@ -81,17 +92,22 @@ class Canvas(QLabel):
             1,
         )
 
+        self.last_x = x
+        self.last_y = y
+
         self.updateCanvas()
+
+    def mouseReleaseEvent(self, e):
+        self.last_x = None
+        self.last_y = None
 
     def setToMnist(self):
         # load mnist if needed
-        if not hasattr(self, "test_x"):
-            from tensorflow.keras.datasets import mnist
-
+        if self.text_x is None:
             (_, _), (self.test_x, _) = mnist.load_data()
             self.test_x = self.test_x / 255.0
 
         rand = np.random.randint(0, len(self.test_x))
-        self.grid_draw = self.test_x[rand].reshape(28, 28).tolist()
+        self.grid_draw = self.test_x[rand].reshape(28, 28)
         self.grid = self.grid_draw
         self.updateCanvas()
