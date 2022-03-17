@@ -100,6 +100,10 @@ class Canvas(QLabel):
     def mouseReleaseEvent(self, e):
         self.last_x = None
         self.last_y = None
+        self.mouseReleased()
+
+    def mouseReleased(self):
+        pass
 
     def setToMnist(self):
         # load mnist if needed

@@ -26,10 +26,9 @@ from output import Output
 class MainUi(QMainWindow):
     """This is the class that provides the main ui of the application"""
 
-    def __init__(self, model):
+    def __init__(self):
         """View initializer."""
         super().__init__()
-        self.model = model
         # Set some main window's properties
         self.setWindowTitle("Handwritten Digit Recognition")
         # self.setFixedSize(235, 235)
@@ -77,9 +76,6 @@ class MainUi(QMainWindow):
         layout.addWidget(self.modeButton)
 
         self.modelButton = QComboBox()
-        self.modelList = ["CNN", "SVM", "KNN", "MLP"]
-        self.modelButton.addItems(self.modelList)
-        self.modelButton.currentIndexChanged.connect(self.changeModel)
         layout.addWidget(self.modelButton)
 
         layout.addStretch()
@@ -96,10 +92,6 @@ class MainUi(QMainWindow):
         instDlg.setFixedSize(300, 300)
         instDlg.exec()
 
-    def changeModel(self, index):
-        print(self.modelList[index])
-        self.canvas.setToImage()
-
     def createInput(self, parent):
         # create the left input side
         layout = QVBoxLayout()
@@ -114,12 +106,7 @@ class MainUi(QMainWindow):
         self.clearButton.clicked.connect(self.canvas.clear)
         buttonLayout.addWidget(self.clearButton)
 
-        self.predictButton = QPushButton("Predict")
-        self.predictButton.clicked.connect(self.predict)
-        buttonLayout.addWidget(self.predictButton)
-
         self.randomButton = QPushButton("Random")
-        self.randomButton.clicked.connect(self.canvas.setToMnist)
         buttonLayout.addWidget(self.randomButton)
 
         layout.addLayout(buttonLayout)
@@ -143,6 +130,3 @@ class MainUi(QMainWindow):
 
         layout.addStretch()
         parent.addLayout(layout)
-
-    def predict(self):
-        self.output.setConfidence(self.model.predict([self.canvas.grid_draw]))

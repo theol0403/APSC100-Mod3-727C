@@ -24,11 +24,37 @@ from PyQt5.QtWidgets import (
 from mainui import MainUi
 
 
+class Controller:
+    """This is the class that provides the actions that happen when a signal is received"""
+
+    def __init__(self, view, model):
+        """Controller initializer."""
+        self.view = view
+        self.model = model
+        # Connect signals and slots
+        self.connectSignals()
+
+    def connectSignals(self):
+        self.view.modelButton.addItems(self.model.modelList)
+        self.view.modelButton.currentIndexChanged.connect(self.model.changeModel)
+
+        self.view.canvas.mouseReleased = self.predict
+        self.view.randomButton.clicked.connect(self.view.canvas.setToMnist)
+        self.view.randomButton.clicked.connect(self.predict)
+
+    def predict(self):
+        self.view.output.setConfidence(self.model.predict([self.view.canvas.grid_draw]))
+
+
 class Model:
     """This is the class that provides the business logic for the UI"""
 
     def __init__(self):
         self.model = load_model("cnn.h5")
+        self.modelList = ["CNN", "SVM", "KNN", "MLP"]
+
+    def changeModel(self, index):
+        print(self.modelList[index])
 
     def predict(self, grid):
         """Predict the output of the grid"""
@@ -42,8 +68,10 @@ def main():
     # Create an instance of `QApplication`
     app = QApplication(sys.argv)
     # Show the calculator's GUI
-    view = MainUi(Model())
+    view = MainUi()
     view.show()
+    model = Model()
+    Controller(view, model)
     # Execute calculator's main loop
     sys.exit(app.exec())
 
