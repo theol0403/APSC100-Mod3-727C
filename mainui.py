@@ -147,6 +147,8 @@ class MainUi(QMainWindow):
 
         self.infoFrame = QLabel()
         self.infoFrame.setFrameShape(QFrame.Box)
+        self.infoFrame.setAlignment(Qt.AlignTop)
+        # self.infoFrame.setMinimumSize(300, 207)
         layout.addWidget(self.infoFrame)
 
         layout.addStretch()

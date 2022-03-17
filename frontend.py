@@ -48,22 +48,32 @@ class Controller:
         self.view.clearButton.clicked.connect(self.predict)
 
     def predict(self):
-        self.view.output.setConfidence(self.model.predict([self.view.canvas.grid]))
+        confidence = self.model.predict([self.view.canvas.grid])
+        self.view.output.setConfidence(confidence)
+        prediction = np.argmax(confidence)
+        percent = confidence[prediction] * 100
+
+        text = ""
+        text += f"Digit: {prediction} \n"
+        text += f"Confidence: {percent:.2f} \n"
+        text += f"------------------------------------ \n"
+        text += f"Model: {self.model.model} \n"
+
+        self.view.infoFrame.setText(text)
 
 
 class Model:
-    """This is the class that provides the business logic for the UI"""
-
     def __init__(self):
-        self.model = load_model("cnn.h5")
+        self.model_data = load_model("cnn.h5")
         self.modelList = ["CNN", "SVM", "KNN", "MLP"]
+        self.model = self.modelList[0]
 
     def changeModel(self, index):
         print(self.modelList[index])
 
     def predict(self, grid):
         """Predict the output of the grid"""
-        prediction = self.model.predict(np.array(grid).reshape(1, 28, 28))[0]
+        prediction = self.model_data.predict(np.array(grid).reshape(1, 28, 28))[0]
         return prediction
 
 
