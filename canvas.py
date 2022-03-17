@@ -108,8 +108,12 @@ class Canvas(QLabel):
     def mouseReleased(self):
         pass
 
+    def mousePressEvent(self, e):
+        if e.button() == Qt.RightButton:
+            self.clear()
+
     def setToMnist(self):
+        self.clear()
         rand = np.random.randint(0, len(self.test_x))
-        self.grid_draw = self.test_x[rand].reshape(28, 28)
-        self.grid = self.grid_draw
+        self.grid = self.test_x[rand].reshape(28, 28)
         self.updateCanvas()

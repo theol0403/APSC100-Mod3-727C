@@ -23,6 +23,18 @@ from canvas import Canvas
 from output import Output
 
 
+class QHLine(QFrame):
+    def __init__(self):
+        super(QHLine, self).__init__()
+        self.setFrameShape(QFrame.HLine)
+
+
+class QVLine(QFrame):
+    def __init__(self):
+        super(QVLine, self).__init__()
+        self.setFrameShape(QFrame.VLine)
+
+
 class MainUi(QMainWindow):
     """This is the class that provides the main ui of the application"""
 
@@ -44,11 +56,18 @@ class MainUi(QMainWindow):
         self.centralWidget.setLayout(self.mainLayout)
 
         # Create layouts
-        self.createMenu()
+        # self.createMenu()
         self.createTitle()
+
+        self.mainLayout.addSpacing(5)
+        self.mainLayout.addWidget(QHLine())
+        self.mainLayout.addSpacing(5)
 
         self.bodyLayout = QHBoxLayout()
         self.createInput(self.bodyLayout)
+        self.bodyLayout.addSpacing(5)
+        self.bodyLayout.addWidget(QVLine())
+        self.bodyLayout.addSpacing(5)
         self.createOutput(self.bodyLayout)
         self.mainLayout.addLayout(self.bodyLayout)
 
@@ -67,21 +86,13 @@ class MainUi(QMainWindow):
         title.setStyleSheet("font-size: 20px;")
         layout.addWidget(title)
 
+        layout.addStretch()
+
         self.instButton = QPushButton("Instructions")
         self.instButton.clicked.connect(self.showInst)
         layout.addWidget(self.instButton)
 
-        self.modeButton = QComboBox()
-        self.modeButton.addItems(["Handwriting", "Webcam"])
-        layout.addWidget(self.modeButton)
-
-        self.modelButton = QComboBox()
-        layout.addWidget(self.modelButton)
-
-        layout.addStretch()
-
         self.mainLayout.addLayout(layout)
-        self.mainLayout.addSpacing(20)
 
     def showInst(self):
         instDlg = QDialog(self)
@@ -96,7 +107,13 @@ class MainUi(QMainWindow):
         # create the left input side
         layout = QVBoxLayout()
 
-        layout.addWidget(QLabel("Input"))
+        title = QHBoxLayout()
+        title.addWidget(QLabel("Input"))
+        self.modeButton = QComboBox()
+        self.modeButton.addItems(["Handwriting", "Webcam"])
+        title.addWidget(self.modeButton)
+        layout.addLayout(title)
+
         self.canvas = Canvas()
         self.canvas.setFrameShape(QFrame.Box)
         layout.addWidget(self.canvas)
@@ -116,7 +133,12 @@ class MainUi(QMainWindow):
         # create the right output side
         layout = QVBoxLayout()
 
-        layout.addWidget(QLabel("Output"))
+        title = QHBoxLayout()
+        title.addWidget(QLabel("Output"))
+        self.modelButton = QComboBox()
+        title.addWidget(self.modelButton)
+        layout.addLayout(title)
+
         self.output = Output()
         self.output.setFrameShape(QFrame.Box)
         layout.addWidget(self.output)

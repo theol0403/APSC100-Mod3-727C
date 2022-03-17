@@ -48,7 +48,7 @@ class Controller:
         self.view.clearButton.clicked.connect(self.predict)
 
     def predict(self):
-        self.view.output.setConfidence(self.model.predict([self.view.canvas.grid_draw]))
+        self.view.output.setConfidence(self.model.predict([self.view.canvas.grid]))
 
 
 class Model:
