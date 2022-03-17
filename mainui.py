@@ -97,6 +97,8 @@ class MainUi(QMainWindow):
 
     def changeModel(self, index):
         print(self.modelList[index])
+        if index is 1:
+            self.canvas.setToImage()
 
     def createInput(self, parent):
         # create the left input side

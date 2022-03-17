@@ -1,6 +1,8 @@
 import sys
 import numpy as np
 from functools import partial
+from PIL import Image
+from PIL.ImageQt import ImageQt
 
 from PyQt5 import QtGui, QtWidgets, QtCore, QtCore
 from PyQt5.QtCore import Qt
@@ -60,3 +62,9 @@ class Canvas(QLabel):
         y = np.clip(y, 0, self.pixel - 1)
         self.grid[x][y] = 1
         self.updateCanvas()
+    
+    def setToImage(self):
+        im = Image.open(r"icon.png")
+        im = ImageQt(im).copy()
+        self.setPixmap(QtGui.QPixmap.fromImage(im))
+        #self.layout_plot.addWidget(label)
