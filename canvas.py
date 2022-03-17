@@ -3,6 +3,7 @@ import numpy as np
 from functools import partial
 from PIL import Image
 from PIL.ImageQt import ImageQt
+from scipy.ndimage.filters import gaussian_filter
 
 from PyQt5 import QtGui, QtWidgets, QtCore, QtCore
 from PyQt5.QtCore import Qt
@@ -21,12 +22,6 @@ from PyQt5.QtWidgets import (
     QDialog,
 )
 
-from tensorflow.keras.datasets import mnist
-
-(train_x, train_y), (test_x, test_y) = mnist.load_data()
-train_x = train_x / 255.0
-test_x = test_x / 255.0
-
 
 class Canvas(QLabel):
     def __init__(self):
@@ -36,10 +31,14 @@ class Canvas(QLabel):
         self.pixel = 28
         self.scale = self.dim / self.pixel
 
+        self.sigma = 0.8
+        self.boost = 4
+
         self.setPixmap(QtGui.QPixmap(self.dim, self.dim))
         self.clear()
 
     def clear(self):
+        self.grid_draw = np.zeros((self.pixel, self.pixel))
         self.grid = np.zeros((self.pixel, self.pixel))
         self.updateCanvas()
 
@@ -70,16 +69,29 @@ class Canvas(QLabel):
         x = np.clip(x, 0, self.pixel - 1)
         y = np.clip(y, 0, self.pixel - 1)
         # set the grid value
-        self.grid[y][x] = 1
+        self.grid_draw[y][x] = 1
+
+        self.grid = np.clip(
+            gaussian_filter(
+                self.grid_draw,
+                sigma=(self.sigma, self.sigma),
+            )
+            * self.boost,
+            0,
+            1,
+        )
 
         self.updateCanvas()
 
-    def setToImage(self):
-        im = Image.open(r"icon.png")
-        im = ImageQt(im).copy()
-        self.setPixmap(QtGui.QPixmap.fromImage(im))
-        # self.layout_plot.addWidget(label)
-
     def setToMnist(self):
-        self.grid = test_x[np.random.randint(len(test_x))].reshape(28, 28).tolist()
+        # load mnist if needed
+        if not hasattr(self, "test_x"):
+            from tensorflow.keras.datasets import mnist
+
+            (_, _), (self.test_x, _) = mnist.load_data()
+            self.test_x = self.test_x / 255.0
+
+        rand = np.random.randint(0, len(self.test_x))
+        self.grid_draw = self.test_x[rand].reshape(28, 28).tolist()
+        self.grid = self.grid_draw
         self.updateCanvas()

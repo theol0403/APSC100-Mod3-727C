@@ -145,4 +145,4 @@ class MainUi(QMainWindow):
         parent.addLayout(layout)
 
     def predict(self):
-        self.output.setConfidence(self.model.predict([self.canvas.grid]))
+        self.output.setConfidence(self.model.predict([self.canvas.grid_draw]))
