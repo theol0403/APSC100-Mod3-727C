@@ -1,23 +1,8 @@
-import sys
 import numpy as np
-from functools import partial
 
-from PyQt5 import QtGui, QtWidgets, QtCore, QtCore
+from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QGridLayout,
-    QLineEdit,
-    QPushButton,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QApplication,
-    QMainWindow,
-    QWidget,
-    QFrame,
-    QComboBox,
-    QDialog,
-)
+from PyQt5.QtWidgets import QLabel
 
 
 class Output(QLabel):

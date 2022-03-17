@@ -1,29 +1,10 @@
-import sys
 import numpy as np
-from functools import partial
-from PIL import Image
-from PIL.ImageQt import ImageQt
 from scipy.ndimage.filters import gaussian_filter
 from skimage import draw
-from tensorflow.keras.datasets import mnist
 
-
-from PyQt5 import QtGui, QtWidgets, QtCore, QtCore
+from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QGridLayout,
-    QLineEdit,
-    QPushButton,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QApplication,
-    QMainWindow,
-    QWidget,
-    QFrame,
-    QComboBox,
-    QDialog,
-)
+from PyQt5.QtWidgets import QLabel
 
 
 class Canvas(QLabel):
@@ -41,9 +22,6 @@ class Canvas(QLabel):
 
         self.setPixmap(QtGui.QPixmap(self.dim, self.dim))
         self.clear()
-
-        (_, _), (self.test_x, _) = mnist.load_data()
-        self.test_x = self.test_x / 255.0
 
     def clear(self):
         self.grid_draw = np.zeros((self.pixel, self.pixel))
@@ -111,9 +89,3 @@ class Canvas(QLabel):
     def mousePressEvent(self, e):
         if e.button() == Qt.RightButton:
             self.clear()
-
-    def setToMnist(self):
-        self.clear()
-        rand = np.random.randint(0, len(self.test_x))
-        self.grid = self.test_x[rand].reshape(28, 28)
-        self.updateCanvas()

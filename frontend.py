@@ -1,56 +1,47 @@
 import sys
 import numpy as np
-from functools import partial
-from tensorflow import keras
-from keras.models import load_model
+from tensorflow.keras.models import load_model
+from tensorflow.keras.datasets import mnist
 
-from PyQt5 import QtGui, QtWidgets, QtCore, QtCore
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QGridLayout,
-    QLineEdit,
-    QPushButton,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QApplication,
-    QMainWindow,
-    QWidget,
-    QFrame,
-    QComboBox,
-    QDialog,
-)
+from PyQt5.QtWidgets import QApplication
 
 from mainui import MainUi
 
 
 class Controller:
-    """This is the class that provides the actions that happen when a signal is received"""
+    """This class connects the buttons of the UI with model and other parts of the UI"""
 
     def __init__(self, view, model):
-        """Controller initializer."""
         self.view = view
         self.model = model
-        # Connect signals and slots
         self.connectSignals()
-
         self.predict()
 
     def connectSignals(self):
+        """Add actions to the UI elements"""
         self.view.modelButton.addItems(self.model.modelList)
         self.view.modelButton.currentIndexChanged.connect(self.model.changeModel)
         self.view.modelButton.currentIndexChanged.connect(self.predict)
 
         self.view.canvas.mouseReleased = self.predict
-        self.view.randomButton.clicked.connect(self.view.canvas.setToMnist)
+        self.view.randomButton.clicked.connect(self.displayMnist)
         self.view.randomButton.clicked.connect(self.predict)
 
         self.view.clearButton.clicked.connect(self.view.canvas.clear)
         self.view.clearButton.clicked.connect(self.predict)
 
+    def displayMnist(self):
+        self.view.canvas.clear()
+        rand = np.random.randint(0, len(self.model.test_x))
+        self.view.canvas.grid = self.model.test_x[rand].reshape(28, 28)
+        self.view.canvas.updateCanvas()
+
     def predict(self):
+        """Predict from the canvas grid using the model and then update the ui with the prediction"""
         confidence = self.model.predict([self.view.canvas.grid])
         self.view.output.setConfidence(confidence)
+
+        # update the information summary
         prediction = np.argmax(confidence)
         percent = confidence[prediction] * 100
 
@@ -64,6 +55,8 @@ class Controller:
 
 
 class Model:
+    """This class contains and runs the ML models"""
+
     def __init__(self):
         self.modelList = ["CNN", "SVM", "KNN", "MLP"]
         self.model = self.modelList[0]
@@ -71,6 +64,9 @@ class Model:
         self.loadModels()
 
     def loadModels(self):
+        (_, _), (self.test_x, _) = mnist.load_data()
+        self.test_x = self.test_x / 255.0
+
         self.cnn = load_model("cnn.h5")
 
     def changeModel(self, index):

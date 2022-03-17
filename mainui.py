@@ -1,17 +1,10 @@
-import sys
-import numpy as np
-from functools import partial
-
-from PyQt5 import QtGui, QtWidgets, QtCore, QtCore
+from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QGridLayout,
-    QLineEdit,
     QPushButton,
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
-    QApplication,
     QMainWindow,
     QWidget,
     QFrame,
@@ -51,11 +44,10 @@ class MainUi(QMainWindow):
         # Set the central widget and the general layout
         self.centralWidget = QWidget(self)
         self.setCentralWidget(self.centralWidget)
-
         self.mainLayout = QVBoxLayout()
         self.centralWidget.setLayout(self.mainLayout)
 
-        # Create layouts
+        # Create ui
         # self.createMenu()
         self.createTitle()
 
@@ -78,7 +70,7 @@ class MainUi(QMainWindow):
         self.inputSelector.addAction("&Camera 1", self.close)
 
     def createTitle(self):
-        # create the title with the two buttons
+        # create the title
         layout = QHBoxLayout()
 
         title = QLabel("Handwritten Digit Classifier")
@@ -93,15 +85,6 @@ class MainUi(QMainWindow):
         layout.addWidget(self.instButton)
 
         self.mainLayout.addLayout(layout)
-
-    def showInst(self):
-        instDlg = QDialog(self)
-        instDlg.setWindowTitle("Instructions")
-        instDlg.layout = QVBoxLayout()
-        text = QLabel("These are the instructions", instDlg)
-        instDlg.layout.addWidget(text)
-        instDlg.setFixedSize(300, 300)
-        instDlg.exec()
 
     def createInput(self, parent):
         # create the left input side
@@ -153,3 +136,13 @@ class MainUi(QMainWindow):
 
         layout.addStretch()
         parent.addLayout(layout)
+
+    def showInst(self):
+        """Show the insructions dialog."""
+        instDlg = QDialog(self)
+        instDlg.setWindowTitle("Instructions")
+        instDlg.layout = QVBoxLayout()
+        text = QLabel("These are the instructions", instDlg)
+        instDlg.layout.addWidget(text)
+        instDlg.setFixedSize(300, 300)
+        instDlg.exec()
