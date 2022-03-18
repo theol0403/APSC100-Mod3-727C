@@ -61,7 +61,10 @@ class Canvas(QLabel):
 
         # set the grid value
         rr, cc = draw.line(self.last_x, self.last_y, x, y)
-        self.grid_draw[cc, rr] = 1
+        if e.modifiers() & Qt.ControlModifier:
+            self.grid_draw[cc, rr] = 0
+        else:
+            self.grid_draw[cc, rr] = 1
 
         self.grid = np.clip(
             gaussian_filter(
