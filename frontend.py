@@ -27,7 +27,10 @@ class Controller:
         self.view.randomButton.clicked.connect(self.predict)
 
         self.view.clearButton.clicked.connect(self.view.canvas.clear)
-        # self.view.clearButton.clicked.connect(self.predict)
+
+        self.view.cameraButton.addItems(self.view.camera.listCameras())
+        self.view.cameraButton.currentIndexChanged.connect(self.view.camera.setCamera)
+        self.view.cameraButton.currentIndexChanged.connect(self.view.camera.restart)
 
     def switchPage(self):
         index = self.view.modeButton.currentIndex()

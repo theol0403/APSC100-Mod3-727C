@@ -133,6 +133,12 @@ class MainUi(QMainWindow):
         layout.addWidget(self.camera)
         layout.addStretch()
 
+        buttonLayout = QHBoxLayout()
+        self.cameraButton = QComboBox()
+        buttonLayout.addWidget(self.cameraButton)
+
+        layout.addLayout(buttonLayout)
+
         canvasPage = QWidget()
         canvasPage.setLayout(layout)
         stack.addWidget(canvasPage)
@@ -171,3 +177,6 @@ class MainUi(QMainWindow):
         instDlg.layout.addWidget(text)
         instDlg.setFixedSize(300, 300)
         instDlg.exec()
+
+    def closeEvent(self, event):
+        self.camera.stop()

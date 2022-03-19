@@ -11,23 +11,25 @@ from PyQt5.QtCore import pyqtSignal, Qt, QThread
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
 
-    def __init__(self):
+    def __init__(self, camera):
         super().__init__()
         self.run = True
         self.pause = True
+        self.camera = camera
 
     def run(self):
         # capture from web cam
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(self.camera.camera)
+        if not cap.isOpened():
+            print("Cannot open camera")
+            return
         while self.run:
             ret, cv_img = cap.read()
             if ret:
                 self.change_pixmap_signal.emit(cv_img)
-        # shut down capture system
         cap.release()
 
     def stop(self):
-        """Sets run flag to False and waits for thread to finish"""
         self.run = False
         self.wait()
 
@@ -39,23 +41,33 @@ class Camera(QLabel):
 
         self.dim = 300
 
-        self.setPixmap(QtGui.QPixmap(self.dim, self.dim))
+        canvas = QtGui.QPixmap(self.dim, self.dim)
+        canvas.fill(Qt.black)
+        self.setPixmap(canvas)
         self.setFixedSize(self.dim, self.dim)
+
+        # search for cameras
+        self.findCameras()
+        self.camera = self.cameras[0]
+
+        self.thread = None
 
     def start(self):
         # create the video capture thread
-        self.thread = VideoThread()
+        self.thread = VideoThread(self)
         # connect its signal to the update_image slot
         self.thread.change_pixmap_signal.connect(self.update)
         # start the thread
         self.thread.start()
 
     def stop(self):
-        self.thread.stop()
+        if self.thread:
+            self.thread.stop()
+            self.thread = None
 
-    def closeEvent(self, event):
+    def restart(self):
         self.stop()
-        event.accept()
+        self.start()
 
     def update(self, cv_img):
         """Updates the image_label with a new opencv image"""
@@ -74,3 +86,18 @@ class Camera(QLabel):
             self.dim, self.dim, Qt.IgnoreAspectRatio, Qt.SmoothTransformation
         )
         return QPixmap.fromImage(p)
+
+    def findCameras(self):
+        """Returns a list of available cameras using opencv"""
+        self.cameras = []
+        for i in range(10):
+            cap = cv2.VideoCapture(i)
+            if cap.isOpened():
+                self.cameras.append(i)
+            cap.release()
+
+    def listCameras(self):
+        return ["Camera " + str(i) for i in self.cameras]
+
+    def setCamera(self, i):
+        self.camera = self.cameras[i]
