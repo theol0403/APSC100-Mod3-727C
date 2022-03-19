@@ -13,6 +13,7 @@ class Controller:
         self.view = view
         self.model = model
         self.connectSignals()
+        self.index = 0
 
     def connectSignals(self):
         """Add actions to the UI elements"""
@@ -20,11 +21,11 @@ class Controller:
 
         self.view.modelButton.addItems(self.model.modelList)
         self.view.modelButton.currentIndexChanged.connect(self.model.changeModel)
-        self.view.modelButton.currentIndexChanged.connect(self.predict)
+        self.view.modelButton.currentIndexChanged.connect(self.predictCanvas)
 
-        self.view.canvas.mouseReleased = self.predict
+        self.view.canvas.mouseReleased = self.predictCanvas
         self.view.randomButton.clicked.connect(self.displayMnist)
-        self.view.randomButton.clicked.connect(self.predict)
+        self.view.randomButton.clicked.connect(self.predictCanvas)
 
         self.view.clearButton.clicked.connect(self.view.canvas.clear)
 
@@ -35,20 +36,20 @@ class Controller:
         self.view.threshSlider.valueChanged.connect(self.view.camera.setThresh)
         self.view.threshSlider.valueChanged.connect(self.updateSliders)
         self.view.threshSlider.setValue(self.view.camera.thresh)
-        self.view.threshCheck.stateChanged.connect(self.view.camera.setThreshCheck)
         self.view.zoomSlider.valueChanged.connect(self.view.camera.setZoom)
         self.view.zoomSlider.valueChanged.connect(self.updateSliders)
         self.view.zoomSlider.setValue(self.view.camera.zoom)
-        self.view.zoomCheck.stateChanged.connect(self.view.camera.setZoomCheck)
+
+        self.view.camera.predict_signal.connect(self.predict)
 
         self.updateSliders()
 
     def switchPage(self):
-        index = self.view.modeButton.currentIndex()
-        self.view.stack.setCurrentIndex(index)
-        if index == 0:
+        self.index = self.view.modeButton.currentIndex()
+        self.view.stack.setCurrentIndex(self.index)
+        if self.index == 0:
             self.view.camera.stop()
-        elif index == 1:
+        elif self.index == 1:
             self.view.camera.start()
 
     def displayMnist(self):
@@ -58,9 +59,12 @@ class Controller:
         self.view.canvas.grid = mnist[rand].reshape(28, 28)
         self.view.canvas.updateCanvas()
 
-    def predict(self):
+    def predictCanvas(self):
+        self.predict([self.view.canvas.grid])
+
+    def predict(self, grid):
         """Predict from the canvas grid using the model and then update the ui with the prediction"""
-        confidence = self.model.predict([self.view.canvas.grid])
+        confidence = self.model.predict(grid)
         self.view.output.setConfidence(confidence)
 
         # update the information summary
@@ -76,8 +80,8 @@ class Controller:
         self.view.infoFrame.setText(text)
 
     def updateSliders(self):
-        self.view.threshCheck.setText(f"Threshold: {self.view.threshSlider.value()}")
-        self.view.zoomCheck.setText(f"Zoom: {self.view.zoomSlider.value()}")
+        self.view.threshLabel.setText(f"Threshold: {self.view.threshSlider.value()}")
+        self.view.zoomLabel.setText(f"Zoom: {self.view.zoomSlider.value()}")
 
 
 class Model:

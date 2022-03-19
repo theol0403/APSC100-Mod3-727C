@@ -140,20 +140,18 @@ class MainUi(QMainWindow):
 
         controlLayout = QGridLayout()
 
-        self.threshCheck = QCheckBox("Threshold")
-        controlLayout.addWidget(self.threshCheck, 0, 0)
+        self.threshLabel = QLabel("Threshold")
+        controlLayout.addWidget(self.threshLabel, 0, 0)
         self.threshSlider = QSlider(Qt.Horizontal)
-        self.threshSlider.setMinimum(150)
+        self.threshSlider.setMinimum(50)
         self.threshSlider.setMaximum(255)
-        self.threshSlider.setTickPosition(QSlider.TicksBelow)
         controlLayout.addWidget(self.threshSlider, 1, 0)
 
-        self.zoomCheck = QCheckBox("Zoom")
-        controlLayout.addWidget(self.zoomCheck, 0, 1)
+        self.zoomLabel = QLabel("Zoom")
+        controlLayout.addWidget(self.zoomLabel, 0, 1)
         self.zoomSlider = QSlider(Qt.Horizontal)
         self.zoomSlider.setMinimum(0)
         self.zoomSlider.setMaximum(100)
-        self.zoomSlider.setTickPosition(QSlider.TicksBelow)
         controlLayout.addWidget(self.zoomSlider, 1, 1)
 
         layout.addLayout(controlLayout)

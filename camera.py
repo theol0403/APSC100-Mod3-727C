@@ -27,6 +27,7 @@ class VideoThread(QThread):
             ret, frame = cap.read()
             if ret:
                 self.change_pixmap_signal.emit(frame)
+            self.usleep(50000)
         cap.release()
 
     def stop(self):
@@ -35,6 +36,8 @@ class VideoThread(QThread):
 
 
 class Camera(QLabel):
+    predict_signal = pyqtSignal(np.ndarray)
+
     def __init__(self):
         super().__init__()
         self.setFrameShape(QFrame.Box)
@@ -53,9 +56,7 @@ class Camera(QLabel):
         self.camera = self.cameras[0]
 
         self.thresh = 100
-        self.threshCheck = 0
-        self.zoom = 0
-        self.zoomCheck = 0
+        self.zoom = 30
 
     def start(self):
         # create the video capture thread
@@ -80,12 +81,6 @@ class Camera(QLabel):
     def setZoom(self, zoom):
         self.zoom = zoom
 
-    def setThreshCheck(self, thresh):
-        self.threshCheck = thresh
-
-    def setZoomCheck(self, zoom):
-        self.zoomCheck = zoom
-
     def findCameras(self):
         """Returns a list of available cameras using opencv"""
         self.cameras = []
@@ -106,6 +101,20 @@ class Camera(QLabel):
         min = np.min([h, w])
         frame = frame[0:min, 0:min]
         frame = cv2.resize(frame, (self.dim, self.dim))
+
+        edge = int(self.dim / 2 * self.zoom / 100)
+        edge2 = self.dim - edge
+
+        grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        _, thr = cv2.threshold(grayFrame, self.thresh, 255, cv2.THRESH_BINARY_INV)
+        thr = thr[edge:edge2, edge:edge2]
+
+        frame[edge:edge2, edge:edge2, 0] = thr
+        frame[edge:edge2, edge:edge2, 1] = thr
+        frame[edge:edge2, edge:edge2, 2] = thr
+
+        thr = cv2.resize(thr[0], (28, 28))
+        self.predict_signal.emit(np.array(thr))
 
         img = self.readCv(frame)
         self.setPixmap(img)
