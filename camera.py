@@ -24,9 +24,9 @@ class VideoThread(QThread):
             print("Cannot open camera")
             return
         while self.run:
-            ret, cv_img = cap.read()
+            ret, frame = cap.read()
             if ret:
-                self.change_pixmap_signal.emit(cv_img)
+                self.change_pixmap_signal.emit(frame)
         cap.release()
 
     def stop(self):
@@ -69,24 +69,6 @@ class Camera(QLabel):
         self.stop()
         self.start()
 
-    def update(self, cv_img):
-        """Updates the image_label with a new opencv image"""
-        qt_img = self.readCv(cv_img)
-        self.setPixmap(qt_img)
-
-    def readCv(self, cv_img):
-        """Convert from an opencv image to QPixmap"""
-        rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
-        h, w, ch = rgb_image.shape
-        bytes_per_line = ch * w
-        convert_to_Qt_format = QtGui.QImage(
-            rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888
-        )
-        p = convert_to_Qt_format.scaled(
-            self.dim, self.dim, Qt.IgnoreAspectRatio, Qt.SmoothTransformation
-        )
-        return QPixmap.fromImage(p)
-
     def findCameras(self):
         """Returns a list of available cameras using opencv"""
         self.cameras = []
@@ -101,3 +83,23 @@ class Camera(QLabel):
 
     def setCamera(self, i):
         self.camera = self.cameras[i]
+
+    def update(self, frame):
+        h, w, ch = frame.shape
+        min = np.min([h, w])
+        frame = frame[0:min, 0:min]
+        frame = cv2.resize(frame, (self.dim, self.dim))
+
+        img = self.readCv(frame)
+        self.setPixmap(img)
+
+    def readCv(self, frame):
+        """Convert from an opencv image to QPixmap"""
+        rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        h, w, ch = rgb_image.shape
+        bytes_per_line = ch * w
+        convert_to_Qt_format = QtGui.QImage(
+            rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888
+        )
+        p = convert_to_Qt_format.scaled(self.dim, self.dim, Qt.KeepAspectRatio)
+        return QPixmap.fromImage(p)
