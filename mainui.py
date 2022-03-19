@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
 )
 
 from canvas import Canvas
+from camera import Camera
 from output import Output
 
 
@@ -130,6 +131,7 @@ class MainUi(QMainWindow):
         layout = QVBoxLayout()
         self.camera = Camera()
         layout.addWidget(self.camera)
+        layout.addStretch()
 
         canvasPage = QWidget()
         canvasPage.setLayout(layout)
