@@ -32,6 +32,17 @@ class Controller:
         self.view.cameraButton.currentIndexChanged.connect(self.view.camera.setCamera)
         self.view.cameraButton.currentIndexChanged.connect(self.view.camera.restart)
 
+        self.view.threshSlider.valueChanged.connect(self.view.camera.setThresh)
+        self.view.threshSlider.valueChanged.connect(self.updateSliders)
+        self.view.threshSlider.setValue(self.view.camera.thresh)
+        self.view.threshCheck.stateChanged.connect(self.view.camera.setThreshCheck)
+        self.view.zoomSlider.valueChanged.connect(self.view.camera.setZoom)
+        self.view.zoomSlider.valueChanged.connect(self.updateSliders)
+        self.view.zoomSlider.setValue(self.view.camera.zoom)
+        self.view.zoomCheck.stateChanged.connect(self.view.camera.setZoomCheck)
+
+        self.updateSliders()
+
     def switchPage(self):
         index = self.view.modeButton.currentIndex()
         self.view.stack.setCurrentIndex(index)
@@ -63,6 +74,10 @@ class Controller:
         text += f"Model: {self.model.model} \n"
 
         self.view.infoFrame.setText(text)
+
+    def updateSliders(self):
+        self.view.threshCheck.setText(f"Threshold: {self.view.threshSlider.value()}")
+        self.view.zoomCheck.setText(f"Zoom: {self.view.zoomSlider.value()}")
 
 
 class Model:

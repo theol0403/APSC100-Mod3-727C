@@ -53,6 +53,9 @@ class Camera(QLabel):
         self.camera = self.cameras[0]
 
         self.thresh = 100
+        self.threshCheck = 0
+        self.zoom = 0
+        self.zoomCheck = 0
 
     def start(self):
         # create the video capture thread
@@ -70,6 +73,18 @@ class Camera(QLabel):
     def restart(self):
         self.stop()
         self.start()
+
+    def setThresh(self, thresh):
+        self.thresh = thresh
+
+    def setZoom(self, zoom):
+        self.zoom = zoom
+
+    def setThreshCheck(self, thresh):
+        self.threshCheck = thresh
+
+    def setZoomCheck(self, zoom):
+        self.zoomCheck = zoom
 
     def findCameras(self):
         """Returns a list of available cameras using opencv"""
