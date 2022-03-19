@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage import gaussian_filter
 from skimage import draw
 
 from PyQt5 import QtGui
@@ -15,7 +15,7 @@ class Canvas(QLabel):
         self.pixel = 28
         self.scale = self.dim / self.pixel
 
-        self.sigma = 0.7
+        self.sigma = 0.5
         self.boost = 3
 
         self.last_x, self.last_y, self.text_x = None, None, None

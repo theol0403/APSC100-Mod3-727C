@@ -25,7 +25,7 @@ class Controller:
         self.view.randomButton.clicked.connect(self.predict)
 
         self.view.clearButton.clicked.connect(self.view.canvas.clear)
-        self.view.clearButton.clicked.connect(self.predict)
+        # self.view.clearButton.clicked.connect(self.predict)
 
     def displayMnist(self):
         self.view.canvas.clear()
