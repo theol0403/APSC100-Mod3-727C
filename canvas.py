@@ -22,6 +22,7 @@ class Canvas(QLabel):
         self.last_x, self.last_y, self.text_x = None, None, None
 
         self.setPixmap(QtGui.QPixmap(self.dim, self.dim))
+        self.setFixedSize(self.dim, self.dim)
         self.clear()
 
     def clear(self):

@@ -14,9 +14,6 @@ class Controller:
         self.model = model
         self.connectSignals()
 
-    def switchPage(self):
-        self.view.stack.setCurrentIndex(self.view.modeButton.currentIndex())
-
     def connectSignals(self):
         """Add actions to the UI elements"""
         self.view.modeButton.currentIndexChanged.connect(self.switchPage)
@@ -31,6 +28,14 @@ class Controller:
 
         self.view.clearButton.clicked.connect(self.view.canvas.clear)
         # self.view.clearButton.clicked.connect(self.predict)
+
+    def switchPage(self):
+        index = self.view.modeButton.currentIndex()
+        self.view.stack.setCurrentIndex(index)
+        if index == 0:
+            self.view.camera.stop()
+        elif index == 1:
+            self.view.camera.start()
 
     def displayMnist(self):
         self.view.canvas.clear()
