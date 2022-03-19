@@ -14,8 +14,13 @@ class Controller:
         self.model = model
         self.connectSignals()
 
+    def switchPage(self):
+        self.view.stack.setCurrentIndex(self.view.modeButton.currentIndex())
+
     def connectSignals(self):
         """Add actions to the UI elements"""
+        self.view.modeButton.currentIndexChanged.connect(self.switchPage)
+
         self.view.modelButton.addItems(self.model.modelList)
         self.view.modelButton.currentIndexChanged.connect(self.model.changeModel)
         self.view.modelButton.currentIndexChanged.connect(self.predict)

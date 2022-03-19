@@ -99,16 +99,18 @@ class MainUi(QMainWindow):
         title.addWidget(self.modeButton)
         layout.addLayout(title)
 
-        self.createCanvas(layout)
+        self.stack = QStackedLayout()
+        self.createCanvas(self.stack)
+        self.createCamera(self.stack)
 
+        layout.addLayout(self.stack)
         parent.addLayout(layout)
 
-    def createCanvas(self, parent):
+    def createCanvas(self, stack):
         # create the input canvas
-        canvasLayout = QVBoxLayout()
+        layout = QVBoxLayout()
         self.canvas = Canvas()
-        self.canvas.setFrameShape(QFrame.Box)
-        canvasLayout.addWidget(self.canvas)
+        layout.addWidget(self.canvas)
 
         buttonLayout = QHBoxLayout()
         self.clearButton = QPushButton("Clear")
@@ -117,14 +119,21 @@ class MainUi(QMainWindow):
         self.randomButton = QPushButton("Random")
         buttonLayout.addWidget(self.randomButton)
 
-        canvasLayout.addLayout(buttonLayout)
+        layout.addLayout(buttonLayout)
 
-        self.stack = QStackedLayout()
         canvasPage = QWidget()
-        canvasPage.setLayout(canvasLayout)
-        self.stack.addWidget(canvasPage)
+        canvasPage.setLayout(layout)
+        stack.addWidget(canvasPage)
 
-        parent.addLayout(self.stack)
+    def createCamera(self, stack):
+        # create the input canvas
+        layout = QVBoxLayout()
+        self.camera = Camera()
+        layout.addWidget(self.camera)
+
+        canvasPage = QWidget()
+        canvasPage.setLayout(layout)
+        stack.addWidget(canvasPage)
 
     def createOutput(self, parent):
         # create the right output side

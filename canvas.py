@@ -4,12 +4,13 @@ from skimage import draw
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLabel, QFrame
 
 
 class Canvas(QLabel):
     def __init__(self):
         super().__init__()
+        self.setFrameShape(QFrame.Box)
 
         self.dim = 300
         self.pixel = 28
