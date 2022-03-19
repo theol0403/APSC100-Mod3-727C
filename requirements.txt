@@ -1,0 +1,8 @@
+opencv-contrib-python-headless
+pyqt5
+tensorflow
+keras
+scipy
+matplotlib
+numpy
+scikit-image
