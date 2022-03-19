@@ -1,16 +1,19 @@
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QPushButton,
-    QVBoxLayout,
+    QComboBox,
+    QDialog,
+    QFrame,
+    QGridLayout,
     QHBoxLayout,
     QLabel,
     QMainWindow,
-    QWidget,
-    QFrame,
-    QComboBox,
-    QDialog,
+    QPushButton,
+    QSlider,
     QStackedLayout,
+    QVBoxLayout,
+    QWidget,
+    QCheckBox,
 )
 
 from canvas import Canvas
@@ -133,11 +136,28 @@ class MainUi(QMainWindow):
         layout.addWidget(self.camera)
         layout.addStretch()
 
-        buttonLayout = QHBoxLayout()
-        self.cameraButton = QComboBox()
-        buttonLayout.addWidget(self.cameraButton)
+        controlLayout = QGridLayout()
 
-        layout.addLayout(buttonLayout)
+        self.cameraButton = QComboBox()
+        controlLayout.addWidget(self.cameraButton, 0, 0, 2, 1)
+
+        self.threshCheck = QCheckBox("Threshold")
+        controlLayout.addWidget(self.threshCheck, 0, 1)
+        self.threshSlider = QSlider(Qt.Horizontal)
+        self.threshSlider.setMinimum(150)
+        self.threshSlider.setMaximum(255)
+        self.threshSlider.setTickPosition(QSlider.TicksBelow)
+        controlLayout.addWidget(self.threshSlider, 1, 1)
+
+        self.zoomCheck = QCheckBox("Zoom")
+        controlLayout.addWidget(self.zoomCheck, 0, 2)
+        self.zoomSlider = QSlider(Qt.Horizontal)
+        self.zoomSlider.setMinimum(0)
+        self.zoomSlider.setMaximum(100)
+        self.zoomSlider.setTickPosition(QSlider.TicksBelow)
+        controlLayout.addWidget(self.zoomSlider, 1, 2)
+
+        layout.addLayout(controlLayout)
 
         canvasPage = QWidget()
         canvasPage.setLayout(layout)

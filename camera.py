@@ -46,11 +46,13 @@ class Camera(QLabel):
         self.setPixmap(canvas)
         self.setFixedSize(self.dim, self.dim)
 
+        self.thread = None
+
         # search for cameras
         self.findCameras()
         self.camera = self.cameras[0]
 
-        self.thread = None
+        self.thresh = 100
 
     def start(self):
         # create the video capture thread
