@@ -85,11 +85,21 @@ class Model:
             self.cnn = load_model("cnn.h5")
         return self.cnn
 
+    def getMlp(self):
+        if self.cnn is None:
+            print("Loading MLP model")
+            from tensorflow.keras.models import load_model
+
+            self.cnn = load_model("mlp_dropout.h5")
+        return self.cnn
+
     def predict(self, grid):
         if self.model == "CNN":
             prediction = self.getCnn().predict(np.array(grid).reshape(1, 28, 28))[0]
         elif self.model == "SVM":
             prediction = np.zeros(10)
+        if self.model == "MLP":
+            prediction = self.getMlp().predict(np.array(grid).reshape(1, 28, 28))[0]
         return prediction
 
 
