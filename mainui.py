@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
     QFrame,
     QComboBox,
     QDialog,
+    QStackedLayout,
 )
 
 from canvas import Canvas
@@ -90,6 +91,7 @@ class MainUi(QMainWindow):
         # create the left input side
         layout = QVBoxLayout()
 
+        # create input title
         title = QHBoxLayout()
         title.addWidget(QLabel("Input"))
         self.modeButton = QComboBox()
@@ -97,9 +99,16 @@ class MainUi(QMainWindow):
         title.addWidget(self.modeButton)
         layout.addLayout(title)
 
+        self.createCanvas(layout)
+
+        parent.addLayout(layout)
+
+    def createCanvas(self, parent):
+        # create the input canvas
+        canvasLayout = QVBoxLayout()
         self.canvas = Canvas()
         self.canvas.setFrameShape(QFrame.Box)
-        layout.addWidget(self.canvas)
+        canvasLayout.addWidget(self.canvas)
 
         buttonLayout = QHBoxLayout()
         self.clearButton = QPushButton("Clear")
@@ -108,9 +117,14 @@ class MainUi(QMainWindow):
         self.randomButton = QPushButton("Random")
         buttonLayout.addWidget(self.randomButton)
 
-        layout.addLayout(buttonLayout)
+        canvasLayout.addLayout(buttonLayout)
 
-        parent.addLayout(layout)
+        self.stack = QStackedLayout()
+        canvasPage = QWidget()
+        canvasPage.setLayout(canvasLayout)
+        self.stack.addWidget(canvasPage)
+
+        parent.addLayout(self.stack)
 
     def createOutput(self, parent):
         # create the right output side

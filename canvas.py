@@ -15,7 +15,7 @@ class Canvas(QLabel):
         self.pixel = 28
         self.scale = self.dim / self.pixel
 
-        self.sigma = 0.5
+        self.sigma = 0.8
         self.boost = 3
 
         self.last_x, self.last_y, self.text_x = None, None, None
