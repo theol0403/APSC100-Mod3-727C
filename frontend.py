@@ -62,6 +62,7 @@ class Model:
         # lazy-load the models so that frontend loading time is reduced
         self.mnist = None
         self.cnn = None
+        self.mlp = None
 
     def changeModel(self, index):
         self.model = self.modelList[index]
@@ -86,12 +87,12 @@ class Model:
         return self.cnn
 
     def getMlp(self):
-        if self.cnn is None:
+        if self.mlp is None:
             print("Loading MLP model")
             from tensorflow.keras.models import load_model
 
-            self.cnn = load_model("mlp_dropout.h5")
-        return self.cnn
+            self.mlp = load_model("mlp_dropout.h5")
+        return self.mlp
 
     def predict(self, grid):
         if self.model == "CNN":
