@@ -14,7 +14,6 @@ class VideoThread(QThread):
     def __init__(self, camera):
         super().__init__()
         self.run = True
-        self.pause = True
         self.camera = camera
 
     def run(self):
@@ -36,7 +35,7 @@ class VideoThread(QThread):
 
 
 class Camera(QLabel):
-    predict_signal = pyqtSignal(np.ndarray)
+    grid_signal = pyqtSignal(np.ndarray)
 
     def __init__(self):
         super().__init__()
@@ -56,7 +55,7 @@ class Camera(QLabel):
         self.camera = self.cameras[0]
 
         self.thresh = 100
-        self.zoom = 30
+        self.zoom = 60
 
     def start(self):
         # create the video capture thread
@@ -114,7 +113,7 @@ class Camera(QLabel):
         frame[edge:edge2, edge:edge2, 2] = thr
 
         thr = cv2.resize(thr[0], (28, 28))
-        self.predict_signal.emit(np.array(thr))
+        self.grid_signal.emit(np.array(thr))
 
         img = self.readCv(frame)
         self.setPixmap(img)

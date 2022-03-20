@@ -5,9 +5,12 @@ from skimage import draw
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QFrame
+from PyQt5.QtCore import pyqtSignal, Qt, QThread
 
 
 class Canvas(QLabel):
+    grid_signal = pyqtSignal(np.ndarray)
+
     def __init__(self):
         super().__init__()
         self.setFrameShape(QFrame.Box)
@@ -48,6 +51,7 @@ class Canvas(QLabel):
                 )
         painter.end()
         self.setPixmap(canvas)
+        self.grid_signal.emit(self.grid)
 
     def mouseMoveEvent(self, e):
         # convert the mouse position to grid position
@@ -86,10 +90,6 @@ class Canvas(QLabel):
     def mouseReleaseEvent(self, e):
         self.last_x = None
         self.last_y = None
-        self.mouseReleased()
-
-    def mouseReleased(self):
-        pass
 
     def mousePressEvent(self, e):
         if e.button() == Qt.RightButton:

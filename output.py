@@ -42,16 +42,12 @@ class Output(QLabel):
             x = i * (self.diam + spacing) + spacing
             cy = int((self.height - self.diam) / (3 / 2)) + 4
             ty = int((self.height) / (3 / 1)) + 4
-            if i == np.argmax(self.confidence):
-                p.setColor(Qt.red)
-                p.setWidth(2)
-            else:
-                p.setColor(Qt.black)
-                p.setWidth(1)
             color = QtGui.QColor(0, 0, 0, int(self.confidence[i] * 255))
-            painter.setPen(p)
             painter.setBrush(color)
+            painter.setPen(Qt.black)
             painter.drawEllipse(x, cy, self.diam, self.diam)
+            if i == np.argmax(self.confidence):
+                painter.setPen(Qt.red)
             painter.drawText(
                 int(x + self.diam / 2 - self.fontSize / 4),
                 int(ty),

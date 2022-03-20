@@ -151,7 +151,7 @@ class MainUi(QMainWindow):
         controlLayout.addWidget(self.zoomLabel, 0, 1)
         self.zoomSlider = QSlider(Qt.Horizontal)
         self.zoomSlider.setMinimum(0)
-        self.zoomSlider.setMaximum(100)
+        self.zoomSlider.setMaximum(99)
         controlLayout.addWidget(self.zoomSlider, 1, 1)
 
         layout.addLayout(controlLayout)

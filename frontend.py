@@ -4,6 +4,7 @@ import numpy as np
 from PyQt5.QtWidgets import QApplication
 
 from mainui import MainUi
+from model import Model
 
 
 class Controller:
@@ -19,15 +20,11 @@ class Controller:
         """Add actions to the UI elements"""
         self.view.modeButton.currentIndexChanged.connect(self.switchPage)
 
+        self.view.clearButton.clicked.connect(self.view.canvas.clear)
+        self.view.randomButton.clicked.connect(self.displayMnist)
+
         self.view.modelButton.addItems(self.model.modelList)
         self.view.modelButton.currentIndexChanged.connect(self.model.changeModel)
-        self.view.modelButton.currentIndexChanged.connect(self.predictCanvas)
-
-        self.view.canvas.mouseReleased = self.predictCanvas
-        self.view.randomButton.clicked.connect(self.displayMnist)
-        self.view.randomButton.clicked.connect(self.predictCanvas)
-
-        self.view.clearButton.clicked.connect(self.view.canvas.clear)
 
         self.view.cameraButton.addItems(self.view.camera.listCameras())
         self.view.cameraButton.currentIndexChanged.connect(self.view.camera.setCamera)
@@ -40,7 +37,9 @@ class Controller:
         self.view.zoomSlider.valueChanged.connect(self.updateSliders)
         self.view.zoomSlider.setValue(self.view.camera.zoom)
 
-        self.view.camera.predict_signal.connect(self.predict)
+        self.view.canvas.grid_signal.connect(self.model.setGrid)
+        self.view.camera.grid_signal.connect(self.model.setGrid)
+        self.model.thread.predict_signal.connect(self.setPrediction)
 
         self.updateSliders()
 
@@ -59,12 +58,7 @@ class Controller:
         self.view.canvas.grid = mnist[rand].reshape(28, 28)
         self.view.canvas.updateCanvas()
 
-    def predictCanvas(self):
-        self.predict([self.view.canvas.grid])
-
-    def predict(self, grid):
-        """Predict from the canvas grid using the model and then update the ui with the prediction"""
-        confidence = self.model.predict(grid)
+    def setPrediction(self, confidence):
         self.view.output.setConfidence(confidence)
 
         # update the information summary
@@ -84,58 +78,6 @@ class Controller:
         self.view.zoomLabel.setText(f"Zoom: {self.view.zoomSlider.value()}")
 
 
-class Model:
-    """This class contains and runs the ML models"""
-
-    def __init__(self):
-        self.modelList = ["CNN", "SVM", "KNN", "MLP"]
-        self.model = self.modelList[0]
-
-        # lazy-load the models so that frontend loading time is reduced
-        self.mnist = None
-        self.cnn = None
-        self.mlp = None
-
-    def changeModel(self, index):
-        self.model = self.modelList[index]
-        print(f"Model changed to {self.model}")
-
-    # load the models on demand
-    def getMnist(self):
-        if self.mnist is None:
-            print("Loading MNIST dataset")
-            from tensorflow.keras.datasets import mnist
-
-            (_, _), (self.mnist, _) = mnist.load_data()
-            self.mnist = self.mnist / 255.0
-        return self.mnist
-
-    def getCnn(self):
-        if self.cnn is None:
-            print("Loading CNN model")
-            from tensorflow.keras.models import load_model
-
-            self.cnn = load_model("cnn.h5")
-        return self.cnn
-
-    def getMlp(self):
-        if self.mlp is None:
-            print("Loading MLP model")
-            from tensorflow.keras.models import load_model
-
-            self.mlp = load_model("mlp_dropout.h5")
-        return self.mlp
-
-    def predict(self, grid):
-        if self.model == "CNN":
-            prediction = self.getCnn().predict(np.array(grid).reshape(1, 28, 28))[0]
-        elif self.model == "SVM":
-            prediction = np.zeros(10)
-        if self.model == "MLP":
-            prediction = self.getMlp().predict(np.array(grid).reshape(1, 28, 28))[0]
-        return prediction
-
-
 # Client code
 def main():
     """Main function."""
@@ -145,7 +87,7 @@ def main():
     view = MainUi()
     view.show()
     model = Model()
-    Controller(view, model)
+    controller = Controller(view, model)
     # Execute calculator's main loop
     sys.exit(app.exec())
 
