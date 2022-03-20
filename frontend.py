@@ -88,6 +88,7 @@ def main():
     """Main function."""
     # Create an instance of `QApplication`
     app = QApplication(sys.argv)
+    app.setStyle("Breeze")
     # Show the calculator's GUI
     view = MainUi()
     view.show()
