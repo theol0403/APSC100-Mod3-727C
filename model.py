@@ -1,24 +1,26 @@
 import numpy as np
 from PyQt5.QtCore import pyqtSignal, Qt, QThread
+from time import perf_counter
 
 
 class PredictThread(QThread):
-    predict_signal = pyqtSignal(np.ndarray)
+    predict_signal = pyqtSignal(np.ndarray, float)
 
     def __init__(self, model):
         super().__init__()
         self.run = True
         self.model = model
         self.grid = np.zeros((28, 28))
-        # if lazy load
-        # self.grid = None
+        self.gridUpdated = True
 
     def run(self):
         while self.run:
-            if self.grid is not None:
+            if self.gridUpdated:
+                self.gridUpdated = False
+                start_wall = perf_counter()
                 confidence = self.model.predict(self.grid)
-                self.predict_signal.emit(confidence)
-                self.grid = None
+                end_wall = perf_counter()
+                self.predict_signal.emit(confidence, end_wall - start_wall)
             self.usleep(20000)
 
     def stop(self):
@@ -44,6 +46,7 @@ class Model:
 
     def changeModel(self, index):
         self.model = self.modelList[index]
+        self.thread.gridUpdated = True
         print(f"Model changed to {self.model}")
 
     # load the models on demand
@@ -83,3 +86,4 @@ class Model:
 
     def setGrid(self, grid):
         self.thread.grid = grid
+        self.thread.gridUpdated = True

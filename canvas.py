@@ -43,6 +43,8 @@ class Canvas(QLabel):
         painter = QtGui.QPainter(canvas)
         for i in range(len(self.grid)):
             for j in range(len(self.grid[i])):
+                if self.grid[j][i] == 0:
+                    continue
                 opa = 255 - int(self.grid[j][i] * 255)
                 color = QtGui.QColor(opa, opa, opa, 255)
                 painter.setPen(color)

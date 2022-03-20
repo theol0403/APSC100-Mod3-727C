@@ -194,6 +194,3 @@ class MainUi(QMainWindow):
         instDlg.layout.addWidget(text)
         instDlg.setFixedSize(300, 300)
         instDlg.exec()
-
-    def closeEvent(self, event):
-        self.camera.stop()

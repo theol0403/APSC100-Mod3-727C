@@ -41,6 +41,8 @@ class Controller:
         self.view.camera.grid_signal.connect(self.model.setGrid)
         self.model.thread.predict_signal.connect(self.setPrediction)
 
+        self.view.closeEvent = self.stop
+
         self.updateSliders()
 
     def switchPage(self):
@@ -56,7 +58,7 @@ class Controller:
         rand = np.random.randint(0, len(mnist))
         self.view.canvas.setGrid(mnist[rand].reshape(28, 28))
 
-    def setPrediction(self, confidence):
+    def setPrediction(self, confidence, time_wall):
         self.view.output.setConfidence(confidence)
 
         # update the information summary
@@ -65,7 +67,8 @@ class Controller:
 
         text = ""
         text += f"Digit: {prediction} \n"
-        text += f"Confidence: {percent:.2f} \n"
+        text += f"Confidence: {percent:.2f}% \n"
+        text += f"Processing Time: {time_wall*1000:.0f} ms \n"
         text += f"------------------------------------ \n"
         text += f"Model: {self.model.model} \n"
 
@@ -74,6 +77,10 @@ class Controller:
     def updateSliders(self):
         self.view.threshLabel.setText(f"Threshold: {self.view.threshSlider.value()}")
         self.view.zoomLabel.setText(f"Zoom: {self.view.zoomSlider.value()}")
+
+    def stop(self, e):
+        self.model.thread.stop()
+        self.view.camera.stop()
 
 
 # Client code
