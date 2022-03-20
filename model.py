@@ -10,11 +10,15 @@ class PredictThread(QThread):
         self.run = True
         self.model = model
         self.grid = np.zeros((28, 28))
+        # if lazy load
+        # self.grid = None
 
     def run(self):
         while self.run:
-            confidence = self.model.predict(self.grid)
-            self.predict_signal.emit(confidence)
+            if self.grid is not None:
+                confidence = self.model.predict(self.grid)
+                self.predict_signal.emit(confidence)
+                self.grid = None
             self.usleep(20000)
 
     def stop(self):
