@@ -19,7 +19,7 @@ class Canvas(QLabel):
         self.pixel = 28
         self.scale = self.dim / self.pixel
 
-        self.sigma = 0.8
+        self.sigma = 0.6
         self.boost = 3
 
         self.last_x, self.last_y, self.text_x = None, None, None
@@ -31,6 +31,10 @@ class Canvas(QLabel):
     def clear(self):
         self.grid_draw = np.zeros((self.pixel, self.pixel))
         self.grid = np.zeros((self.pixel, self.pixel))
+        self.updateCanvas()
+
+    def setGrid(self, grid):
+        self.grid = grid
         self.updateCanvas()
 
     def updateCanvas(self):

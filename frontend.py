@@ -52,11 +52,9 @@ class Controller:
             self.view.camera.start()
 
     def displayMnist(self):
-        self.view.canvas.clear()
         mnist = self.model.getMnist()
         rand = np.random.randint(0, len(mnist))
-        self.view.canvas.grid = mnist[rand].reshape(28, 28)
-        self.view.canvas.updateCanvas()
+        self.view.canvas.setGrid(mnist[rand].reshape(28, 28))
 
     def setPrediction(self, confidence):
         self.view.output.setConfidence(confidence)

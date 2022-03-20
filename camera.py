@@ -112,8 +112,8 @@ class Camera(QLabel):
         frame[edge:edge2, edge:edge2, 1] = thr
         frame[edge:edge2, edge:edge2, 2] = thr
 
-        thr = cv2.resize(thr[0], (28, 28))
-        self.grid_signal.emit(np.array(thr))
+        thr = cv2.resize(thr, (28, 28), interpolation=cv2.INTER_LANCZOS4) / 255.0
+        self.grid_signal.emit(thr)
 
         img = self.readCv(frame)
         self.setPixmap(img)
