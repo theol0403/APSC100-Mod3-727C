@@ -36,6 +36,7 @@ class Canvas(QLabel):
     def setGrid(self, grid):
         self.grid = grid
         self.updateCanvas()
+        self.grid_signal.emit(self.grid)
 
     def updateCanvas(self):
         canvas = self.pixmap()
@@ -57,7 +58,6 @@ class Canvas(QLabel):
                 )
         painter.end()
         self.setPixmap(canvas)
-        self.grid_signal.emit(self.grid)
 
     def mouseMoveEvent(self, e):
         # convert the mouse position to grid position
@@ -92,6 +92,7 @@ class Canvas(QLabel):
         self.last_y = y
 
         self.updateCanvas()
+        self.grid_signal.emit(self.grid)
 
     def mouseReleaseEvent(self, e):
         self.last_x = None

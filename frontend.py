@@ -2,6 +2,7 @@ import sys
 import numpy as np
 
 from PyQt5.QtWidgets import QApplication
+from functools import partial
 
 from mainui import MainUi
 from model import Model
@@ -26,9 +27,10 @@ class Controller:
         self.view.modelButton.addItems(self.model.modelList)
         self.view.modelButton.currentIndexChanged.connect(self.model.changeModel)
 
-        self.view.cameraButton.addItems(self.view.camera.listCameras())
-        self.view.cameraButton.currentIndexChanged.connect(self.view.camera.setCamera)
-        self.view.cameraButton.currentIndexChanged.connect(self.view.camera.restart)
+        [
+            self.view.inputSelector.addAction(camera, partial(self.changeCamera, i))
+            for i, camera in enumerate(self.view.camera.listCameras())
+        ]
 
         self.view.threshSlider.valueChanged.connect(self.view.camera.setThresh)
         self.view.threshSlider.valueChanged.connect(self.updateSliders)
@@ -77,6 +79,10 @@ class Controller:
     def updateSliders(self):
         self.view.threshLabel.setText(f"Threshold: {self.view.threshSlider.value()}")
         self.view.zoomLabel.setText(f"Zoom: {self.view.zoomSlider.value()}")
+
+    def changeCamera(self, i):
+        self.view.camera.setCamera(i)
+        self.view.camera.restart()
 
     def stop(self, e):
         self.model.thread.stop()

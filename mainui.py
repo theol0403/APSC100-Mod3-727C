@@ -53,7 +53,7 @@ class MainUi(QMainWindow):
         self.centralWidget.setLayout(self.mainLayout)
 
         # Create ui
-        # self.createMenu()
+        self.createMenu()
         self.createTitle()
 
         self.mainLayout.addSpacing(5)
@@ -66,13 +66,13 @@ class MainUi(QMainWindow):
         self.bodyLayout.addWidget(QVLine())
         self.bodyLayout.addSpacing(5)
         self.createOutput(self.bodyLayout)
+        self.bodyLayout.addStretch()
         self.mainLayout.addLayout(self.bodyLayout)
 
     def createMenu(self):
-        self.file = self.menuBar().addMenu("&File")
-        self.file.addAction("&Exit", self.close)
-        self.inputSelector = self.menuBar().addMenu("&Input Device")
-        self.inputSelector.addAction("&Camera 1", self.close)
+        self.file = self.menuBar().addMenu("File")
+        self.file.addAction("Exit", self.close)
+        self.inputSelector = self.menuBar().addMenu("Input Device")
 
     def createTitle(self):
         # create the title
@@ -101,8 +101,6 @@ class MainUi(QMainWindow):
         self.modeButton = QComboBox()
         self.modeButton.addItems(["Handwriting", "Webcam"])
         title.addWidget(self.modeButton)
-        self.cameraButton = QComboBox()
-        title.addWidget(self.cameraButton)
         layout.addLayout(title)
 
         self.stack = QStackedLayout()

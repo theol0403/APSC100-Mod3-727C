@@ -71,8 +71,9 @@ class Camera(QLabel):
             self.thread = None
 
     def restart(self):
-        self.stop()
-        self.start()
+        if self.thread:
+            self.stop()
+            self.start()
 
     def setThresh(self, thresh):
         self.thresh = thresh
