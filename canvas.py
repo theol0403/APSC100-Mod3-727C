@@ -20,7 +20,7 @@ class Canvas(QLabel):
         self.scale = self.dim / self.pixel
 
         self.sigma = 0.6
-        self.boost = 3
+        self.boost = 5
 
         self.last_x, self.last_y, self.text_x = None, None, None
 
@@ -37,6 +37,23 @@ class Canvas(QLabel):
         self.grid = grid
         self.updateCanvas()
         self.grid_signal.emit(self.grid)
+
+    def setSigma(self, sigma):
+        self.sigma = sigma
+        self.applyFilter()
+        self.updateCanvas()
+        self.grid_signal.emit(self.grid)
+
+    def applyFilter(self):
+        self.grid = np.clip(
+            gaussian_filter(
+                self.grid_draw,
+                sigma=(self.sigma, self.sigma),
+            )
+            * self.boost,
+            0,
+            1,
+        )
 
     def updateCanvas(self):
         canvas = self.pixmap()
@@ -78,15 +95,7 @@ class Canvas(QLabel):
         else:
             self.grid_draw[cc, rr] = 1
 
-        self.grid = np.clip(
-            gaussian_filter(
-                self.grid_draw,
-                sigma=(self.sigma, self.sigma),
-            )
-            * self.boost,
-            0,
-            1,
-        )
+        self.applyFilter()
 
         self.last_x = x
         self.last_y = y

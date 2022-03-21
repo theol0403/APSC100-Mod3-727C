@@ -118,10 +118,19 @@ class MainUi(QMainWindow):
 
         buttonLayout = QHBoxLayout()
         self.clearButton = QPushButton("Clear")
-        buttonLayout.addWidget(self.clearButton)
+        buttonLayout.addWidget(self.clearButton, 1)
 
         self.randomButton = QPushButton("Random")
-        buttonLayout.addWidget(self.randomButton)
+        buttonLayout.addWidget(self.randomButton, 1)
+
+        self.sigmaSlider = QSlider(Qt.Horizontal)
+        self.sigmaSlider.setMinimum(20)
+        self.sigmaSlider.setMaximum(150)
+        self.sigmaLabel = QLabel("Sigma")
+        sigmaLayout = QVBoxLayout()
+        sigmaLayout.addWidget(self.sigmaLabel)
+        sigmaLayout.addWidget(self.sigmaSlider)
+        buttonLayout.addLayout(sigmaLayout, 0)
 
         layout.addLayout(buttonLayout)
 

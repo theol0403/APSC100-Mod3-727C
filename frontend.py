@@ -23,6 +23,8 @@ class Controller:
 
         self.view.clearButton.clicked.connect(self.view.canvas.clear)
         self.view.randomButton.clicked.connect(self.displayMnist)
+        self.view.sigmaSlider.valueChanged.connect(self.updateSigma)
+        self.view.sigmaSlider.setValue(int(self.view.canvas.sigma * 100))
 
         self.view.modelButton.addItems(self.model.modelList)
         self.view.modelButton.currentIndexChanged.connect(self.model.changeModel)
@@ -46,6 +48,7 @@ class Controller:
         self.view.closeEvent = self.stop
 
         self.updateSliders()
+        self.updateSigma()
 
     def switchPage(self):
         self.index = self.view.modeButton.currentIndex()
@@ -79,6 +82,11 @@ class Controller:
     def updateSliders(self):
         self.view.threshLabel.setText(f"Threshold: {self.view.threshSlider.value()}")
         self.view.zoomLabel.setText(f"Zoom: {self.view.zoomSlider.value()}")
+
+    def updateSigma(self):
+        sigma = self.view.sigmaSlider.value() / 100
+        self.view.sigmaLabel.setText(f"Sigma: {sigma:.2f}")
+        self.view.canvas.setSigma(sigma)
 
     def changeCamera(self, i):
         self.view.camera.setCamera(i)
