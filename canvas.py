@@ -89,11 +89,12 @@ class Canvas(QLabel):
             return
 
         # set the grid value
-        rr, cc = draw.line(self.last_x, self.last_y, x, y)
+        rr, cc, val = *draw.line(self.last_x, self.last_y, x, y), 1
+        # rr, cc, val = draw.line_aa(self.last_x, self.last_y, x, y)
         if e.modifiers() & Qt.ControlModifier:
             self.grid_draw[cc, rr] = 0
         else:
-            self.grid_draw[cc, rr] = 1
+            self.grid_draw[cc, rr] = val
 
         self.applyFilter()
 
