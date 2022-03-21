@@ -88,13 +88,18 @@ class Canvas(QLabel):
             self.last_y = y
             return
 
-        # set the grid value
-        rr, cc, val = *draw.line(self.last_x, self.last_y, x, y), 1
-        # rr, cc, val = draw.line_aa(self.last_x, self.last_y, x, y)
         if e.modifiers() & Qt.ControlModifier:
-            self.grid_draw[cc, rr] = 0
+            self.grid_draw = np.roll(self.grid_draw, y - self.last_y, axis=0)
+            self.grid_draw = np.roll(self.grid_draw, x - self.last_x, axis=1)
+            pass
         else:
-            self.grid_draw[cc, rr] = val
+            # set the grid value
+            # rr, cc, val = *draw.line(self.last_x, self.last_y, x, y), 1
+            rr, cc, val = draw.line_aa(self.last_x, self.last_y, x, y)
+            if e.modifiers() & Qt.ShiftModifier:
+                self.grid_draw[cc, rr] = 0
+            else:
+                self.grid_draw[cc, rr] = val
 
         self.applyFilter()
 
