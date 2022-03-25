@@ -50,12 +50,13 @@ class Camera(QLabel):
 
         self.thread = None
 
-        # search for cameras
-        self.findCameras()
-        self.camera = self.cameras[0]
-
         self.thresh = 100
         self.zoom = 60
+
+        # search for cameras
+        self.findCameras()
+        if len(self.cameras) > 0:
+            self.camera = self.cameras[0]
 
     def start(self):
         # create the video capture thread
