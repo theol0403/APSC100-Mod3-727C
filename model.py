@@ -36,20 +36,39 @@ class Model:
         self.thread = PredictThread(self)
         self.thread.start()
 
-        self.modelList = ["CNN", "SVM", "KNN", "MLP"]
+        self.kerasModels = ["CNN", "CNN_Augmented", "MLP_Dropout"]
+        self.modelList = self.kerasModels + ["SVM", "KNN"]
         self.model = self.modelList[0]
-
-        # lazy-load the models so that frontend loading time is reduced
-        self.mnist = None
-        self.cnn = None
-        self.mlp = None
 
     def changeModel(self, index):
         self.model = self.modelList[index]
         self.thread.gridUpdated = True
         print(f"Model changed to {self.model}")
 
-    # load the models on demand
+    # lazy-load the models so that frontend loading time is reduced
+    def getKeras(self, name):
+        filename = name.lower()
+        if not hasattr(self, filename):
+            print(f"Loading {name} model")
+            from tensorflow.keras.models import load_model
+
+            setattr(self, filename, load_model(f"models/{filename}.h5"))
+        return getattr(self, filename)
+
+    def predictKeras(self, name, grid):
+        return self.getKeras(name).predict(np.array(grid).reshape(1, 28, 28))[0]
+
+    def predict(self, grid):
+        if self.model in self.kerasModels:
+            prediction = self.predictKeras(self.model, grid)
+        elif self.model == "SVM":
+            prediction = np.zeros(10)
+        return prediction
+
+    def setGrid(self, grid):
+        self.thread.grid = grid
+        self.thread.gridUpdated = True
+
     def getMnist(self):
         if self.mnist is None:
             print("Loading MNIST dataset")
@@ -58,32 +77,3 @@ class Model:
             (_, _), (self.mnist, _) = mnist.load_data()
             self.mnist = self.mnist / 255.0
         return self.mnist
-
-    def getCnn(self):
-        if self.cnn is None:
-            print("Loading CNN model")
-            from tensorflow.keras.models import load_model
-
-            self.cnn = load_model("cnn.h5")
-        return self.cnn
-
-    def getMlp(self):
-        if self.mlp is None:
-            print("Loading MLP model")
-            from tensorflow.keras.models import load_model
-
-            self.mlp = load_model("mlp_dropout.h5")
-        return self.mlp
-
-    def predict(self, grid):
-        if self.model == "CNN":
-            prediction = self.getCnn().predict(np.array(grid).reshape(1, 28, 28))[0]
-        elif self.model == "SVM":
-            prediction = np.zeros(10)
-        if self.model == "MLP":
-            prediction = self.getMlp().predict(np.array(grid).reshape(1, 28, 28))[0]
-        return prediction
-
-    def setGrid(self, grid):
-        self.thread.grid = grid
-        self.thread.gridUpdated = True
