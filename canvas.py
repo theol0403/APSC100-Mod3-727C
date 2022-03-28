@@ -89,8 +89,9 @@ class Canvas(QLabel):
             return
 
         if e.modifiers() & Qt.ControlModifier:
-            self.grid_draw = np.roll(self.grid_draw, y - self.last_y, axis=0)
-            self.grid_draw = np.roll(self.grid_draw, x - self.last_x, axis=1)
+            self.grid_draw = np.roll(
+                self.grid_draw, (y - self.last_y, x - self.last_x), axis=(0, 1)
+            )
             pass
         else:
             # set the grid value
