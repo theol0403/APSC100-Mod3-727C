@@ -120,7 +120,7 @@ class MainUi(QMainWindow):
         self.clearButton = QPushButton("Clear")
         buttonLayout.addWidget(self.clearButton, 1)
 
-        self.randomButton = QPushButton("Random")
+        self.randomButton = QPushButton("MNIST")
         buttonLayout.addWidget(self.randomButton, 1)
 
         self.sigmaSlider = QSlider(Qt.Horizontal)
