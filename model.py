@@ -1,6 +1,7 @@
 import numpy as np
 from PyQt5.QtCore import pyqtSignal, Qt, QThread
 from time import perf_counter
+from joblib import dump, load
 
 
 class PredictThread(QThread):
@@ -37,7 +38,8 @@ class Model:
         self.thread.start()
 
         self.kerasModels = ["CNN", "CNN_Augmented", "MLP_Dropout"]
-        self.modelList = self.kerasModels + ["SVM", "KNN"]
+        self.scikitModels = ["KNN", "KNN_Augmented", "SVM", "SVM_Augmented"]
+        self.modelList = self.kerasModels + self.scikitModels
         self.model = self.modelList[0]
 
     def changeModel(self, index):
@@ -55,13 +57,25 @@ class Model:
             setattr(self, filename, load_model(f"models/{filename}.h5"))
         return getattr(self, filename)
 
-    def predictKeras(self, name, grid):
-        return self.getKeras(name).predict(np.array(grid).reshape(1, 28, 28))[0]
+    def getScikit(self, name):
+        filename = name.lower()
+        if not hasattr(self, filename):
+            print(f"Loading {name} model")
+            setattr(self, filename, load(f"models/{filename}.joblib"))
+        return getattr(self, filename)
 
     def predict(self, grid):
         if self.model in self.kerasModels:
-            prediction = self.predictKeras(self.model, grid)
-        elif self.model == "SVM":
+            prediction = self.getKeras(self.model).predict(
+                np.reshape(grid, (1, 28, 28))
+            )[0]
+        elif self.model in self.scikitModels:
+            prediction = np.eye(
+                1,
+                10,
+                self.getScikit(self.model).predict(np.reshape(grid, (1, 28 * 28)))[0],
+            )[0]
+        else:
             prediction = np.zeros(10)
         return prediction
 
