@@ -37,7 +37,7 @@ class Model:
         self.thread = PredictThread(self)
         self.thread.start()
 
-        self.kerasModels = ["CNN", "CNN_Augmented", "MLP_Dropout"]
+        self.kerasModels = ["CNN", "CNN_Augmented", "MLP"]
         self.scikitModels = ["KNN", "KNN_Augmented", "SVM", "SVM_Augmented"]
         self.modelList = self.kerasModels + self.scikitModels
         self.model = self.modelList[0]
