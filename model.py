@@ -42,6 +42,8 @@ class Model:
         self.modelList = self.kerasModels + self.scikitModels
         self.model = self.modelList[0]
 
+        self.mnist = None
+
     def changeModel(self, index):
         self.model = self.modelList[index]
         self.thread.gridUpdated = True
