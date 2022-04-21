@@ -69,6 +69,8 @@ class MainUi(QMainWindow):
         self.bodyLayout.addStretch()
         self.mainLayout.addLayout(self.bodyLayout)
 
+        self.setFixedSize(640, 490)
+
     def createMenu(self):
         self.file = self.menuBar().addMenu("File")
         self.file.addAction("Exit", self.close)
@@ -197,7 +199,21 @@ class MainUi(QMainWindow):
         instDlg = QDialog(self)
         instDlg.setWindowTitle("Instructions")
         instDlg.layout = QVBoxLayout()
-        text = QLabel("These are the instructions", instDlg)
+        inst = """
+        - select model in output section
+        - canvas mode:
+            - draw a digit using the mouse or touchscreen
+            - load a random MNIST digit
+            - clear the canvas
+            - ctrl-click to drag
+            - shift-click to erase
+            - adjust sigma to change blurring
+        - camera mode:
+            - scan a digit using a webcam
+            - adjust threshold and zoom to isolate digit
+            - select camera from menu
+        """
+        text = QLabel(inst, instDlg)
         instDlg.layout.addWidget(text)
-        instDlg.setFixedSize(300, 300)
+        instDlg.setFixedSize(400, 250)
         instDlg.exec()
